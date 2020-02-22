@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9.6)
-project(MPI_Communication Fortran)
+project(Projet1-MPI Fortran)
 enable_language(Fortran)
 find_package(MPI REQUIRED COMPONENTS Fortran)
 

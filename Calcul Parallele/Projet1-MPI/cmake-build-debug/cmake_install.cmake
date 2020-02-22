@@ -1,4 +1,4 @@
-# Install script for directory: /home/alexandre/CLionProjects/Fortran/MPI_Communication
+# Install script for directory: /home/alexandre/CLionProjects/ProjetM2Semestre2/Calcul Parallele/Projet1-MPI
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/alexandre/CLionProjects/Fortran/MPI_Communication/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/alexandre/CLionProjects/ProjetM2Semestre2/Calcul Parallele/Projet1-MPI/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

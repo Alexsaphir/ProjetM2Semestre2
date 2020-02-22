@@ -1,5 +1,0 @@
-/home/alexandre/CLionProjects/Fortran/MPI_Communication/build/CMakeFiles/rebuild_cache.dir
-/home/alexandre/CLionProjects/Fortran/MPI_Communication/build/CMakeFiles/MPI_Projet1.dir
-/home/alexandre/CLionProjects/Fortran/MPI_Communication/build/CMakeFiles/MPI_derivedType.dir
-/home/alexandre/CLionProjects/Fortran/MPI_Communication/build/CMakeFiles/MPI_Communication.dir
-/home/alexandre/CLionProjects/Fortran/MPI_Communication/build/CMakeFiles/edit_cache.dir
