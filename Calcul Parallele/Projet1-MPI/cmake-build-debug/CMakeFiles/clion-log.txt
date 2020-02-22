@@ -1,6 +1,0 @@
-/home/alexandre/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/193.6494.38/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=/usr/bin/cc -DCMAKE_CXX_COMPILER=/usr/bin/g++-9 -G "CodeBlocks - Unix Makefiles" "/home/alexandre/CLionProjects/ProjetM2Semestre2/Calcul Parallele/Projet1-MPI"
--- Compiler used : /usr/bin/mpif90
--- Run: /usr/bin/mpiexec -n 3  EXECUTABLE  ARGS
--- Configuring done
--- Generating done
--- Build files have been written to: /home/alexandre/CLionProjects/ProjetM2Semestre2/Calcul Parallele/Projet1-MPI/cmake-build-debug
