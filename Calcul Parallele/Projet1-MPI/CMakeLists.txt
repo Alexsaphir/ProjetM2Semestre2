@@ -1,28 +1,33 @@
-cmake_minimum_required(VERSION 3.9.6)
-project(Projet1-MPI Fortran)
-enable_language(Fortran)
-find_package(MPI REQUIRED COMPONENTS Fortran)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.9.6)
+PROJECT(MPI_Projet1 Fortran)
+ENABLE_LANGUAGE(Fortran)
+FIND_PACKAGE(MPI REQUIRED COMPONENTS Fortran)
 
-find_package(LATEX COMPONENTS PDFLATEX)
-#include(UseLATEX.cmake)
+FIND_PACKAGE(LATEX COMPONENTS PDFLATEX)
 
+ADD_DEFINITIONS(${MPI_Fortran_COMPILE_FLAGS})
+INCLUDE_DIRECTORIES(${MPI_Fortran_INCLUDE_DIRS})
+LINK_DIRECTORIES(${MPI_FortranLIBRARY_DIRS})
 
-# set(CMAKE_Fortran_COMPILER mpif90)
+ADD_EXECUTABLE(MPI_Projet1
+			   src/main.f90
+			   src/constantes.f90
+			   src/parametre.f90)
+TARGET_LINK_LIBRARIES(MPI_Projet1 MPI::MPI_Fortran)
 
-add_definitions(${MPI_Fortran_COMPILE_FLAGS})
-include_directories(${MPI_Fortran_INCLUDE_DIRS})
-link_directories(${MPI_FortranLIBRARY_DIRS})
+ADD_CUSTOM_COMMAND(
+		TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+		${CMAKE_SOURCE_DIR}/conf/conf.nml
+		$<TARGET_FILE_DIR:${PROJECT_NAME}>)
 
-add_executable(MPI_derivedType src/derived_type.f90)
-target_link_libraries(MPI_derivedType MPI::MPI_Fortran)
+ADD_CUSTOM_COMMAND(
+		TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+		${CMAKE_SOURCE_DIR}/script/post-traitement.py
+		$<TARGET_FILE_DIR:${PROJECT_NAME}>)
 
-add_executable(MPI_Communication src/main.f90)
-target_link_libraries(MPI_Communication MPI::MPI_Fortran)
-
-add_executable(MPI_Projet1 src/projet1.f90)
-target_link_libraries(MPI_Projet1 MPI::MPI_Fortran)
-
-MESSAGE(STATUS "Compiler used : ${MPI_Fortran_COMPILER}")
-message(STATUS "Run: ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${MPIEXEC_MAX_NUMPROCS} ${MPIEXEC_PREFLAGS} EXECUTABLE ${MPIEXEC_POSTFLAGS} ARGS")
-
-#add_latex_document(main.tex)
+MESSAGE("Compiler used : ${MPI_Fortran_COMPILER}")
+MESSAGE("Source dir    : ${CMAKE_SOURCE_DIR}")
+MESSAGE("Binary dir    : ${CMAKE_CURRENT_BINARY_DIR}")
+MESSAGE("How to run    : ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${MPIEXEC_MAX_NUMPROCS} ${MPIEXEC_PREFLAGS} EXECUTABLE ${MPIEXEC_POSTFLAGS} ARGS")
