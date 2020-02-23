@@ -41,6 +41,13 @@ PROGRAM Projet1
     IF(rang == 0) THEN
         PRINT*, 'Calcul de U sur la grille avec ', nprocs, 'processus'
     END IF
+    CALL LOAD_PARAMETRE
+    IF(rang == 0) THEN
+        PRINT*, L
+        PRINT*, B
+        PRINT*, alpha
+        PRINT*, filename
+    END IF
     ! Alloue/init la grille de travail pour u de chaque processus
     ALLOCATE(U(Nx, Ny))
     U = 0._rp

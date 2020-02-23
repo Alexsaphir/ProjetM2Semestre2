@@ -1,0 +1,10 @@
+&conf
+L=2.
+B=1.
+alpha = 1.
+Ns = 20 ! Nombre de sous intervalles pr l'intégrale
+Nk = 47 ! Nombre de k utilisés dans la somme
+Nx = 10 ! Nombre de point ds la grille en x
+Ny = 10 ! Nombre de point ds la grille en y
+filename = "data.out"
+/
