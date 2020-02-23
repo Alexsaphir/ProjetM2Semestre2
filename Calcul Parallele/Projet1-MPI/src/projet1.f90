@@ -29,7 +29,7 @@ PROGRAM Projet1
     REAL(rp), PARAMETER :: alpha = 1.
     INTEGER, PARAMETER :: Ns = 20 ! Nombre de sous intervalles
     INTEGER, PARAMETER :: Nk = 47 ! Nombre de k utilisés dans la somme
-    INTEGER, PARAMETER :: Nx = 1000, Ny = 1000 ! Nombre de point ds la grille sur chaque direction
+    INTEGER, PARAMETER :: Nx = 10, Ny = 10 ! Nombre de point ds la grille sur chaque direction
     ! MPI stuff.
     INTEGER :: nprocs, rang, ierr
 
@@ -70,14 +70,22 @@ PROGRAM Projet1
         down_k = SINH(B * kr * PI / L)
         DO j = 1, Ny
             up_y = SINH((B - Y(j)) * kr * PI / L)
-            DO i=1,Nx
-                U(i,j) = a * up_y*SIN(kr*PI*X(i)/L) /down_k
+            DO i = 1, Nx
+                U(i, j) = a * up_y * SIN(kr * PI * X(i) / L) / down_k
             END DO
         END DO
     END DO
 
     ! Le processus 0 doit maintenant recevoir les données
     ! Pour ce faire on utilise une reduction sur les tableaux
+    IF (rang==0) THEN
+        !
+        CALL MPI_REDUCE(MPI_IN_PLACE, U, Nx*Ny, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
+    ELSE
+        CALL MPI_REDUCE(U, U, Nx*Ny, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
+    END IF
+
+    ! On sauvegarde alors
 
     CALL MPI_FINALIZE(ierr)
 CONTAINS
