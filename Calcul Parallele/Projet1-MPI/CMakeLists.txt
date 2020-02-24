@@ -11,8 +11,23 @@ LINK_DIRECTORIES(${MPI_FortranLIBRARY_DIRS})
 ADD_EXECUTABLE(MPI_Projet1
 			   src/main.f90
 			   src/constantes.f90
-			   src/parametre.f90)
+			   src/parametre.f90
+			   src/mpiCommon.f90
+			   src/reqFunction.f90)
+
+ADD_EXECUTABLE(MPI_PROJET_STUDY_A
+			   src/studyAconv.f90
+			   src/constantes.f90
+			   src/parametre.f90
+			   src/reqFunction.f90)
+
 TARGET_LINK_LIBRARIES(MPI_Projet1 MPI::MPI_Fortran)
+
+ADD_CUSTOM_COMMAND(
+		TARGET MPI_PROJET_STUDY_A POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+		${CMAKE_SOURCE_DIR}/conf/conf.nml
+		$<TARGET_FILE_DIR:MPI_PROJET_STUDY_A>)
 
 ADD_CUSTOM_COMMAND(
 		TARGET ${PROJECT_NAME} POST_BUILD
@@ -25,6 +40,12 @@ ADD_CUSTOM_COMMAND(
 		COMMAND ${CMAKE_COMMAND} -E copy
 		${CMAKE_SOURCE_DIR}/script/post-traitement.py
 		$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+
+ADD_CUSTOM_COMMAND(
+		TARGET MPI_PROJET_STUDY_A POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+		${CMAKE_SOURCE_DIR}/script/plot_conv.py
+		$<TARGET_FILE_DIR:MPI_PROJET_STUDY_A>)
 
 MESSAGE("Compiler used : ${MPI_Fortran_COMPILER}")
 MESSAGE("Source dir    : ${CMAKE_SOURCE_DIR}")

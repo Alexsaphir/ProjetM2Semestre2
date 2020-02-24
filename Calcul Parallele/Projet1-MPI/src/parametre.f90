@@ -14,12 +14,22 @@ MODULE PARAMETRE
     CHARACTER(*), PARAMETER :: fileconf = 'conf.nml' ! Nom du fichier de configuration
     INTEGER, PRIVATE :: u
 
-    namelist /conf/ L, B, alpha, Ns, Nk, Nx, Ny, filename
+    ! PArametre pour l'analys de convergence de A
+    INTEGER:: Kmax = 5000
+    ! Parametre pour solution donné par l'auteur
+    INTEGER :: solN = 1
+    CHARACTER(30) :: fileconv
 
+    namelist /conf/ L, B, alpha, Ns, Nk, Nx, Ny, filename
+    namelist /articleSol/ solN
+    namelist /conv/ Kmax, fileconv
 CONTAINS
     SUBROUTINE LOAD_PARAMETRE()
         OPEN(newunit = u, file = fileconf, action = 'read')
         READ(u, nml = conf)
+        READ(u, nml = articleSol)
+        READ(u, nml = conv)
+
         CLOSE(u)
     END SUBROUTINE LOAD_PARAMETRE
 END MODULE PARAMETRE

@@ -2,6 +2,6 @@ MODULE CONSTANTES
     IMPLICIT NONE
 
     ! constantes
-    INTEGER, PARAMETER :: rp = 16
+    INTEGER, PARAMETER :: rp = 10
     REAL(rp), PARAMETER :: pi = 2._rp * ACOS(0._rp)
 END MODULE CONSTANTES

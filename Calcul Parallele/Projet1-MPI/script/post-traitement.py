@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import f90nml
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,17 +26,14 @@ def main():
 
     data = np.genfromtxt(filename)
 
-    hf = plt.figure()
-    ha = hf.add_subplot(111, projection='3d')
-
-    X, Y = np.meshgrid(x, y)  # `plot_surface` expects `x` and `y` data to be 2D
-    ha.plot_surface(X, Y, data)
-
+    # hf = plt.figure()
+    # ha = hf.add_subplot(111, projection='3d')
+    #
+    # X, Y = np.meshgrid(x, y)  # `plot_surface` expects `x` and `y` data to be 2D
+    # ha.plot_surface(X, Y, data)
+    #
+    plt.plot(x, data)
     plt.show()
-
-    plt.show()
-
-    print(X)
 
 
 if __name__ == '__main__':
