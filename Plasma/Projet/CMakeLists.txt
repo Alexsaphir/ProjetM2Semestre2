@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(Projet)
+project("Méthodes semi-Lagrangiennes pour la simulation numérique des plasmas")
 
 set(CMAKE_CXX_STANDARD 17)
 
