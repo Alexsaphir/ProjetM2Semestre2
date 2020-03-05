@@ -19,7 +19,7 @@
 PROGRAM Projet1
     USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY : stdout => output_unit, stdin => input_unit, stderr => error_unit
     USE MPI_F08
-    USE MPI_COMMON
+    USE COMMON
     USE PARAMETRE
     USE REQ_FUNCTION
 

@@ -15,7 +15,7 @@ MODULE PARAMETRE
     INTEGER, PRIVATE :: u
 
     ! PArametre pour l'analys de convergence de A
-    INTEGER:: Kmax = 5000
+    INTEGER :: Kmax = 5000
     ! Parametre pour solution donné par l'auteur
     INTEGER :: solN = 1
     CHARACTER(30) :: fileconv
@@ -32,4 +32,15 @@ CONTAINS
 
         CLOSE(u)
     END SUBROUTINE LOAD_PARAMETRE
+
+    SUBROUTINE PRINT_PARAMETRE()
+        PRINT *, "Les dimensions physique du problèmes sont L=", L, ",B=", B, "."
+        PRINT *, "Discretisation du domaine :              Nx=", Nx, "Ny=", Ny, "."
+        PRINT *, "Limite de la série        : k=", Nk, "."
+        PRINT *, "alpha =", alpha, "."
+        PRINT *, "Point d'intégration Ns=", Ns, "."
+        PRINT *, "Numero Probleme : ", solN
+        PRINT *, "fileconf : ",fileconf
+        PRINT *,"filename : ",filename
+    END SUBROUTINE PRINT_PARAMETRE
 END MODULE PARAMETRE
