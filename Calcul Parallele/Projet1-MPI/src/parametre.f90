@@ -20,9 +20,9 @@ MODULE PARAMETRE
     INTEGER :: solN = 1
     CHARACTER(30) :: fileconv
 
-    namelist /conf/ L, B, alpha, Ns, Nk, Nx, Ny, filename
-    namelist /articleSol/ solN
-    namelist /conv/ Kmax, fileconv
+    NAMELIST /conf/ L, B, alpha, Ns, Nk, Nx, Ny, filename
+    NAMELIST /articleSol/ solN
+    NAMELIST /conv/ Kmax, fileconv
 CONTAINS
     SUBROUTINE LOAD_PARAMETRE()
         OPEN(newunit = u, file = fileconf, action = 'read')

@@ -6,9 +6,12 @@ PROGRAM  MAIN_SEQ
 
     IMPLICIT NONE
 
+    ! Matrice associé au valeur  sur la discretisation du domaine
     REAL(rp), DIMENSION(:, :), ALLOCATABLE :: U
+    ! Permet de stocker les valeur de x et y sur la discretisation du domaine
     REAL(rp), DIMENSION(:), ALLOCATABLE :: Y, X
 
+    ! Variable permettant de stocker des valeurs redondantes
     REAL(rp) :: a, up_y, down_k, kr
 
     INTEGER :: k, i, j
@@ -23,6 +26,7 @@ PROGRAM  MAIN_SEQ
     CALL RANGE(L, Nx, X)
     CALL RANGE(B, Ny, Y)
 
+    ! calcul de la solution
     DO k = 0, Nk
         a = a_k_alpha(k, alpha)
         down_k = SINH(B * kr * PI / L)
