@@ -1,3 +1,0 @@
-/mnt/d/Education/M2/ProjetM2Semestre2/Plasma/Projet/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/mnt/d/Education/M2/ProjetM2Semestre2/Plasma/Projet/cmake-build-debug/CMakeFiles/Projet.dir
-/mnt/d/Education/M2/ProjetM2Semestre2/Plasma/Projet/cmake-build-debug/CMakeFiles/edit_cache.dir
