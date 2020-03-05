@@ -3,6 +3,14 @@ MODULE COMMON
     USE PARAMETRE
     IMPLICIT NONE
 CONTAINS
+    SUBROUTINE FILL_MPI_VALUE(nprocs, rang, ierr)
+        INTEGER, INTENT(INOUT) :: nprocs, rang, ierr
+        !nombre processeurs
+        CALL MPI_COMM_SIZE(MPI_COMM_WORLD, nprocs, ierr)
+        !quel est mon rang
+        CALL MPI_COMM_RANK(MPI_COMM_WORLD, rang, ierr)
+    END SUBROUTINE FILL_MPI_VALUE
+
     FUNCTION GET_JOB_START(nprocs, rang)
         INTEGER, INTENT(IN) :: nprocs
         INTEGER, INTENT(IN) :: rang

@@ -13,6 +13,7 @@ ADD_EXECUTABLE(projet_seq src/main_sequential.f90
         src/common.f90
         src/parametre.f90
         src/reqFunction.f90)
+TARGET_LINK_LIBRARIES(projet_seq MPI::MPI_Fortran)
 
 ADD_EXECUTABLE(projet_par_v0
         src/main_parallel_v0.f90
@@ -27,7 +28,7 @@ ADD_EXECUTABLE(projet_convergence
         src/constantes.f90
         src/parametre.f90
         src/reqFunction.f90)
-
+TARGET_LINK_LIBRARIES(projet_convergence MPI::MPI_Fortran)
 
 #ADD_CUSTOM_COMMAND(
 #        TARGET ${PROJECT_NAME} POST_BUILD

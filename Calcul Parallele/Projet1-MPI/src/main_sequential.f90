@@ -2,6 +2,7 @@ PROGRAM  MAIN_SEQ
     USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY : stdout => output_unit, stdin => input_unit, stderr => error_unit
     USE PARAMETRE
     USE COMMON
+    USE CONSTANTES
     USE REQ_FUNCTION
 
     IMPLICIT NONE
