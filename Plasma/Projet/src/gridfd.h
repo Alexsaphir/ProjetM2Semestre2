@@ -16,6 +16,11 @@ public:
     [[nodiscard]] uint getNx() const;
     [[nodiscard]] uint getNv() const;
 
+//    Pour un i donné retourne la valeur de x dans l'intervalle [0,L]
+	[[nodiscard]] double getX(int i) const;
+	// idem pour [-Vmax,Vmax]
+	[[nodiscard]] double getV(int i) const;
+
     [[nodiscard]] double getDensity(int p, int v) const;
 	[[nodiscard]] double& getDensity(int p, int v);
 
