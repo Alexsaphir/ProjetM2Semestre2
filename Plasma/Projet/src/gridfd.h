@@ -16,12 +16,17 @@ public:
     [[nodiscard]] uint getNx() const;
     [[nodiscard]] uint getNv() const;
 
+    [[nodiscard]] double getDensity(int p, int v) const;
+	[[nodiscard]] double& getDensity(int p, int v);
+
+	void print() const;
+
 private:
     double m_L{1.};
     double m_Vmax{10.};
 
-    uint m_Nx{100};
-    uint m_Nv{100};
+    uint m_Nx{10};
+    uint m_Nv{10};
 
     std::vector<std::vector<double>> m_Grid;
 };
