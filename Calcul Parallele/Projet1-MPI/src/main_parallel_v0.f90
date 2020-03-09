@@ -46,8 +46,8 @@ PROGRAM MAIN_PARALLEL
     CALL RANGE(B, Ny, Y)
 
     ! Recupere la quantité de travaille
-    Nj = GET_JOB_SIZE(nprocs, rang)
-    Nstart = GET_JOB_START(nprocs, rang)
+    Nj = GET_JOB_SIZE(nprocs, rang, Nk)
+    Nstart = GET_JOB_START(nprocs, rang, Nk)
     PRINT*, 'Moi processus ', rang, ', je dois faire ', Nj, ' point.'
     ! Chaque processus calcul sa partie
 
