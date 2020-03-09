@@ -34,10 +34,10 @@ CONTAINS
         s = 0._rp
         DO i = 1, Ns
             !s = s+ dx * hsk(xi + .5_rp * dx, k)
-            s = s + (hsk(xi, k) + 4._rp * hsk(xi + .5_rp * dx, k) + hsk(xi + dx, k)) / 6._rp
+            s = s + dx*(hsk(xi, k) + 4._rp * hsk(xi + .5_rp * dx, k) + hsk(xi + dx, k)) / 6._rp
             xi = xi + dx
         END DO
-        INTEGRAL_PB = dx * s
+        INTEGRAL_PB = s
     END FUNCTION INTEGRAL_PB
 
     FUNCTION a_k_alpha(k, alpha)

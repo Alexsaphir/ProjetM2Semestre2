@@ -19,16 +19,24 @@ PROGRAM  MAIN_SEQ
     ! Chargement des parametres stockés dans le module parametre
     CALL LOAD_PARAMETRE
     CALL PRINT_PARAMETRE
-    !Allocation de la grille de calcul
+    ! Allocation de la grille de calcul
     ALLOCATE(U(Nx, Ny))
 
-    !Allocation des valeurs de discrétisation
+    ! Initialisation à 0
+    DO j = 1, Ny
+        DO i = 1, Nx
+            U(i, j) = 0._rp
+        END DO
+    END DO
+
+    ! Allocation des valeurs de discrétisation
     ALLOCATE(X(Nx), Y(Ny))
     CALL RANGE(L, Nx, X)
     CALL RANGE(B, Ny, Y)
 
-    ! calcul de la solution
-    DO k = 0, Nk
+    ! Calcul de la solution
+    DO k = 1, Nk
+        kr = REAL(k, rp)
         a = a_k_alpha(k, alpha)
         down_k = SINH(B * kr * PI / L)
         DO j = 1, Ny
@@ -44,5 +52,7 @@ PROGRAM  MAIN_SEQ
     DO i = 1, Nx
         WRITE(42, *) (U(i, j), j = 1, Ny)
     END DO
+
+    PRINT*, 'Valeur Max : ', MAXVAL(U)
 
 END PROGRAM MAIN_SEQ
