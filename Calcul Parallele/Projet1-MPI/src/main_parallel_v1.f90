@@ -19,6 +19,7 @@ PROGRAM MAIN_PARALLEL
     REAL(dp) :: t0,t1
     INTEGER :: Nj, Nstart
     INTEGER :: k, i, j
+    REAL(rp), DIMENSION(:), ALLOCATABLE :: Va
 
     ! initialisation
     CALL MPI_INIT(ierr)
@@ -46,8 +47,8 @@ PROGRAM MAIN_PARALLEL
     CALL RANGE(B, Ny, Y)
 
     ! Recupere la quantité de travaille
-    Nj = GET_JOB_SIZE(nprocs, rang, Nk)
-    Nstart = GET_JOB_START(nprocs, rang, Nk)
+    Nj = GET_JOB_SIZE(nprocs, rang,Nk)
+    Nstart = GET_JOB_START(nprocs, rang,Nk)
     PRINT*, 'Moi processus ', rang, ', je dois faire ', Nj, ' point.'
     ! Chaque processus calcul sa partie
 
@@ -55,6 +56,16 @@ PROGRAM MAIN_PARALLEL
     ! À l'indice {indice}
     ! De plus pour un indice entier, on nomme sa version real sous la forme suivante {variable}r
 
+    ALLOCATE(Va(Nk))
+
+    t0 = MPI_Wtime()
+    DO k=1, Nk
+        kr = REAL(k, rp)
+        ! on calcule le coeff a_k^\alpha
+        Va(k) = a_k_alpha(k, alpha)
+    END DO
+
+    t0 = MPI_Wtime()
     DO k = Nstart, Nstart + Nj - 1, 1
         kr = REAL(k, rp)
         ! on calcule le coeff a_k^\alpha
@@ -67,8 +78,10 @@ PROGRAM MAIN_PARALLEL
             END DO
         END DO
     END DO
-
     CALL MPI_Barrier(MPI_COMM_WORLD)
+    t1 = MPI_Wtime()
+
+
     ! Le processus 0 doit maintenant recevoir les données
     ! Pour ce faire on utilise une reduction sur les tableaux
     IF (rang==0) THEN
@@ -76,13 +89,13 @@ PROGRAM MAIN_PARALLEL
     ELSE
         CALL MPI_REDUCE(U, U_final, Nx * Ny , MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
     END IF
-    t1 = MPI_Wtime()
+
     ! On sauvegarde alors
     IF(rang ==0) THEN
-        OPEN(unit = 42, file = filename, status = 'replace')
-        DO i = 1, Nx
-            WRITE(42, *) (U_final(i, j), j = 1, Ny)
-        END DO
+!        OPEN(unit = 42, file = filename, status = 'replace')
+!        DO i = 1, Nx
+!            WRITE(42, *) (U_final(i, j), j = 1, Ny)
+!        END DO
         PRINT*,'Elapsed : ', t1-t0
         PRINT*, 'Valeur Max : ', MAXVAL(U_final)
     END IF

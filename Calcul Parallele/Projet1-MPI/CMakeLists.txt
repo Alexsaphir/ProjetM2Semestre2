@@ -23,6 +23,14 @@ ADD_EXECUTABLE(projet_par_v0
         src/reqFunction.f90)
 TARGET_LINK_LIBRARIES(projet_par_v0 MPI::MPI_Fortran)
 
+ADD_EXECUTABLE(projet_par_v1
+			   src/main_parallel_v1.f90
+			   src/constantes.f90
+			   src/parametre.f90
+			   src/common.f90
+			   src/reqFunction.f90)
+TARGET_LINK_LIBRARIES(projet_par_v1 MPI::MPI_Fortran)
+
 ADD_EXECUTABLE(projet_convergence
         src/studyAconv.f90
         src/constantes.f90

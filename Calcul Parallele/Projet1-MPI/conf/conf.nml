@@ -4,8 +4,8 @@ B=1.
 alpha = .001
 Ns = 750 ! Nombre de sous intervalles pr l'intégrale
 Nk = 50 ! Nombre de k utilisés dans la somme
-Nx = 2000 ! Nombre de point ds la grille en x
-Ny = 1 ! Nombre de point ds la grille en y
+Nx = 200 ! Nombre de point ds la grille en x
+Ny = 200 ! Nombre de point ds la grille en y
 filename = "data.out"
 /
 
