@@ -1,3 +1,5 @@
+! https://tech.io/playgrounds/349/introduction-to-mpi/introduction-to-distributed-computing
+
 PROGRAM MAIN_PARALLEL
     USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY : stdout => output_unit, stdin => input_unit, stderr => error_unit
     USE MPI_F08
@@ -22,7 +24,7 @@ PROGRAM MAIN_PARALLEL
     CALL FILL_MPI_VALUE(nprocs, rang, ierr)
 
     IF(rang == 0) THEN
-        CALL INI
+        CALL LOAD_PARAMETRE_MPI(rang)
         PRINT*, 'Calcul de U sur la grille avec ', nprocs, 'processus'
     END IF
     ! Charge-les parametres en utilisant des namelistes
@@ -67,12 +69,12 @@ PROGRAM MAIN_PARALLEL
     CALL MPI_Barrier(MPI_COMM_WORLD)
     ! Le processus 0 doit maintenant recevoir les données
     ! Pour ce faire on utilise une reduction sur les tableaux
-        IF (rang==0) THEN
-            CALL MPI_REDUCE(U, U_final, Nx * Ny, MPI_REAL16, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
-        ELSE
-            CALL MPI_REDUCE(U, U_final, Nx * Ny, MPI_REAL16, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
-        END IF
-
+    IF (rang==0) THEN
+        CALL MPI_REDUCE(U, U_final, Nx * Ny , MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
+    ELSE
+        CALL MPI_REDUCE(U, U_final, Nx * Ny , MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
+    END IF
+    t1 = MPI_Wtime()
     ! On sauvegarde alors
     IF(rang ==0) THEN
         OPEN(unit = 42, file = filename, status = 'replace')
