@@ -14,11 +14,13 @@ PROGRAM  MAIN_SEQ
 
     ! Variable permettant de stocker des valeurs redondantes
     REAL(rp) :: a, up_y, down_k, kr
+    REAL(dp) :: t0, t1
 
     INTEGER :: k, i, j
     ! Chargement des parametres stockés dans le module parametre
     CALL LOAD_PARAMETRE
     CALL PRINT_PARAMETRE
+    t0 = MPI_Wtime()
     ! Allocation de la grille de calcul
     ALLOCATE(U(Nx, Ny))
 
@@ -47,12 +49,14 @@ PROGRAM  MAIN_SEQ
         END DO
     END DO
 
+    t1 = MPI_Wtime()
     ! Sauvegarde du résultat obtenu
     OPEN(unit = 42, file = filename, status = 'replace')
     DO i = 1, Nx
         WRITE(42, *) (U(i, j), j = 1, Ny)
     END DO
 
+    PRINT*, 'Elapsed : ', t1 - t0
     PRINT*, 'Valeur Max : ', MAXVAL(U)
 
 END PROGRAM MAIN_SEQ

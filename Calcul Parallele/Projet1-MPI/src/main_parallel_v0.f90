@@ -16,11 +16,14 @@ PROGRAM MAIN_PARALLEL
     REAL(rp), DIMENSION(:, :), ALLOCATABLE :: U, U_final
     REAL(rp), DIMENSION(:), ALLOCATABLE :: Y, X
     REAL(rp) :: a, up_y, down_k, kr
+    REAL(dp) :: t0,t1
     INTEGER :: Nj, Nstart
     INTEGER :: k, i, j
 
     ! initialisation
     CALL MPI_INIT(ierr)
+    t0 = MPI_Wtime()
+
     CALL FILL_MPI_VALUE(nprocs, rang, ierr)
 
     IF(rang == 0) THEN
@@ -81,6 +84,8 @@ PROGRAM MAIN_PARALLEL
         DO i = 1, Nx
             WRITE(42, *) (U(i, j), j = 1, Ny)
         END DO
+        PRINT*,'Elapsed : ', t1-t0
+        PRINT*, 'Valeur Max : ', MAXVAL(U)
     END IF
 
     CALL MPI_FINALIZE(ierr)
