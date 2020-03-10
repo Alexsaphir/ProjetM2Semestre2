@@ -1,3 +1,5 @@
+# https://cliutils.gitlab.io/modern-cmake/
+
 cmake_minimum_required(VERSION 3.15)
 project("Méthodes semi-Lagrangiennes pour la simulation numérique des plasmas")
 
