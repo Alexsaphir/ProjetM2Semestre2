@@ -33,12 +33,12 @@ uint GridFD::getNv() const
 	return m_Nv;
 }
 
-double GridFD::getDensity(int p, int v) const
+double GridFD::f(int p, int v) const
 {
 	return m_Grid.at(p % m_Nx).at(v % m_Nv);
 }
 
-double& GridFD::getDensity(int p, int v)
+double& GridFD::f(int p, int v)
 {
 	return m_Grid.at(p % m_Nx).at(v % m_Nv);
 }
