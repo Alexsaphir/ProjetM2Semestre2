@@ -1,3 +1,5 @@
+//https://dsp.stackexchange.com/a/56626
+
 #include <iostream>
 
 #include "gridfd.h"
