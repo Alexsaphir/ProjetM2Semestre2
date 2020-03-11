@@ -5,19 +5,22 @@
 
 typedef unsigned int uint;
 
-struct argGrid
-{
-	double L;
-	double Vmax;
-	uint   Nx;
-	uint   Nv;
-};
+
 
 class GridFD
 {
 public:
+	struct argGrid
+	{
+		double L;
+		double Vmax;
+		uint   Nv;
+		uint   Nx;
+	};
+public:
 	GridFD();
 	GridFD(double L, double Vmax, uint Nx, uint Nv);
+	GridFD(argGrid arg);
 
 	[[nodiscard]] double getL() const;
 	[[nodiscard]] double getVmax() const;
