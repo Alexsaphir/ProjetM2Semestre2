@@ -1,0 +1,28 @@
+real mu(0.5);
+real aa(1);
+real bb(1);
+
+border a(t=0, 2*pi){x=cos(t);y=sin(t);label=1;}
+border b(t=0, 2*pi){x=0.3*cos(t);y=0.3*sin(t);label=2;}
+
+
+mesh Sh=buildmesh(a(180)+b(-60)); // generation mesh
+plot(Sh);
+
+
+fespace Vh(Sh,P1);
+Vh u,v,upair,uimpair;
+
+
+
+// initialisation  
+
+
+//problème pair
+
+
+// problème impair
+
+
+
+
