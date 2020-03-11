@@ -33,7 +33,8 @@ private:
     uint m_Nx{10};
     uint m_Nv{10};
 
-    std::vector<std::vector<double>> m_Grid;
+    std::vector<std::vector<double>> m_f;
+    std::vector<double> m_rho;
 };
 
 #endif // GRIDFD_H
