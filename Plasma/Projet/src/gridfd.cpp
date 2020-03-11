@@ -4,13 +4,13 @@
 
 GridFD::GridFD()
 {
-	this->m_Grid.resize(m_Nx, std::vector<double>(m_Nv, 0.));
+	this->m_f.resize(m_Nx, std::vector<double>(m_Nv, 0.));
 }
 
 GridFD::GridFD(double L, double Vmax, uint Nx, uint Nv)
 	: m_L {L}, m_Vmax {Vmax}, m_Nx {Nx}, m_Nv {Nv}
 {
-	this->m_Grid.resize(m_Nx, std::vector<double>(m_Nv, 0.));
+	this->m_f.resize(m_Nx, std::vector<double>(m_Nv, 0.));
 }
 
 double GridFD::getL() const
@@ -35,17 +35,17 @@ uint GridFD::getNv() const
 
 double GridFD::f(int p, int v) const
 {
-	return m_Grid.at(p % m_Nx).at(v % m_Nv);
+	return m_f.at(p % m_Nx).at(v % m_Nv);
 }
 
 double& GridFD::f(int p, int v)
 {
-	return m_Grid.at(p % m_Nx).at(v % m_Nv);
+	return m_f.at(p % m_Nx).at(v % m_Nv);
 }
 
 void GridFD::print() const
 {
-	for (auto V : m_Grid)
+	for (auto V : m_f)
 	{
 		for (auto d : V)
 		{

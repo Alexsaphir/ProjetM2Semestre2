@@ -34,7 +34,6 @@ public:
 
 	void print() const;
 
-	opera
 
 private:
 	double m_L {1.};
