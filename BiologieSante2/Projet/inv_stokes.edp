@@ -1,0 +1,42 @@
+real mu(0.5);
+real aa(1);
+real bb(1);
+
+// Définition des bords du problème: a,b
+border a(t=0, 2*pi){x=cos(t);y=sin(t);label=1;}
+border b(t=0, 2*pi){x=0.3*cos(t);y=0.3*sin(t);label=2;}
+
+// Définition du domaine étudié: Sh
+mesh Sh=buildmesh(a(180)+b(-60)); // generation mesh
+
+// Affichage du domaine utilisé
+plot(Sh);
+
+// Définition de l'espace de fonction base: Vh
+fespace Vh(Sh,P1);
+
+// Liste de fonction dans Vh: u,v,...
+Vh u,v,upair,uimpair;
+
+// On définit alors les deux problèmes suivant
+
+// Problème dans le cas pair
+problem pb_pair();
+
+// Problème dans le cas impair
+problem pb_impair();
+
+
+
+
+// initialisation  
+
+
+//problème pair
+
+
+// problème impair
+
+
+
+
