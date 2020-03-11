@@ -4,13 +4,12 @@
 
 GridFD::GridFD()
 {
-	this->m_Grid.resize(m_Nx, std::vector<double>(m_Nv, 0.));
+	this->m_f.resize(m_Nx, std::vector<double>(m_Nv, 0.));
 }
 
-GridFD::GridFD(double L, double Vmax, uint Nx, uint Nv)
-	: m_L {L}, m_Vmax {Vmax}, m_Nx {Nx}, m_Nv {Nv}
+GridFD::GridFD(double L, double Vmax, uint Nx, uint Nv) : m_L{L}, m_Vmax{Vmax}, m_Nx{Nx}, m_Nv{Nv}
 {
-	this->m_Grid.resize(m_Nx, std::vector<double>(m_Nv, 0.));
+	this->m_f.resize(m_Nx, std::vector<double>(m_Nv, 0.));
 }
 
 double GridFD::getL() const
@@ -33,19 +32,49 @@ uint GridFD::getNv() const
 	return m_Nv;
 }
 
-double GridFD::getDensity(int p, int v) const
+double GridFD::getX(int i) const
 {
-	return m_Grid.at(p % m_Nx).at(v % m_Nv);
+	return static_cast<double>(i) * m_L * (1. / static_cast<double>(m_Nx));
 }
 
-double& GridFD::getDensity(int p, int v)
+double GridFD::getV(int i) const
 {
-	return m_Grid.at(p % m_Nx).at(v % m_Nv);
+	return static_cast<double>(i) * m_Vmax * (1. / static_cast<double>(m_Nv)) - m_Vmax;
+}
+
+double GridFD::E(int p) const
+{
+	return m_E.at(p % m_Nx);
+}
+
+double &GridFD::E(int p)
+{
+	return m_E.at(p % m_Nx);
+}
+
+double GridFD::f(int p, int v) const
+{
+	return m_f.at(p % m_Nx).at(v % m_Nv);
+}
+
+double &GridFD::f(int p, int v)
+{
+	return m_f.at(p % m_Nx).at(v % m_Nv);
+}
+
+double GridFD::Rho(int p) const
+{
+	return m_rho.at(p % m_Nx);
+}
+
+double &GridFD::Rho(int p)
+{
+	return m_rho.at(p % m_Nx);
 }
 
 void GridFD::print() const
 {
-	for (auto V : m_Grid)
+	for (auto V : m_f)
 	{
 		for (auto d : V)
 		{

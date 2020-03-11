@@ -4,7 +4,10 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += src/main.cpp \
-    src/gridfd.cpp
+    src/gridfd.cpp \
+    src/solver.cpp
 
 HEADERS += \
-    src/gridfd.h
+    src/gridfd.h \
+    src/integrate.h \
+    src/solver.h
