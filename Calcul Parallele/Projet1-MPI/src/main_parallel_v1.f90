@@ -17,79 +17,71 @@ PROGRAM MAIN_PARALLEL
     REAL(rp), DIMENSION(:), ALLOCATABLE :: Y, X
     REAL(rp) :: a, up_y, down_k, kr
     REAL(dp) :: t0, t1
-    INTEGER :: Nj, Nstart,N
-    INTEGER :: k, i, j,Nik
+    INTEGER :: Nj, Nstart, N
+    INTEGER :: k, i, j, Nik
     REAL(rp), DIMENSION(:), ALLOCATABLE :: Va
 
-    ! initialisation
+    ! initialisation et obtention valeur rang, nprocs
     CALL MPI_INIT(ierr)
-    t0 = MPI_Wtime()
-
     CALL FILL_MPI_VALUE(nprocs, rang, ierr)
 
     IF(rang == 0) THEN
         CALL LOAD_PARAMETRE_MPI(rang)
-        PRINT*, 'Calcul de U sur la grille avec ', nprocs, 'processus'
+        PRINT*, 'Résolution du problème avec ', nprocs, 'processus'
     END IF
     ! Charge-les parametres en utilisant des namelistes
     ! Pour éviter de surcharger le disque en io sur un fichier le rang 0 charge les valeurs et les propages
     CALL LOAD_PARAMETRE_MPI(rang)
+    CALL MPI_Barrier(MPI_COMM_WORLD)
 
-    ! Alloue/init la grille de travail pour u de chaque processus
+    ! Alloue/init la grille de travail et les vecteur position de chaque processus
     ALLOCATE(U(Nx, Ny))
+    ALLOCATE(X(Nx), Y(Ny))
+
     IF(rang==0) THEN
         ALLOCATE(U_final(Nx, Ny))
         U_final = 0._rp
     END IF
     U = 0._rp
-    ALLOCATE(X(Nx), Y(Ny))
     CALL RANGE(L, Nx, X)
     CALL RANGE(B, Ny, Y)
 
     ! Chaque processus calcul sa partie
-
     ! L'utilisation de la forme {variable}_{indice} permet de représenter la dépandance de {variable}
     ! À l'indice {indice}
-    ! De plus pour un indice entier, on nomme sa version real sous la forme suivante {variable}r
-
-    ALLOCATE(Va(Nk))
+    ! De plus, pour un indice entier, on nomme sa version real sous la forme suivante {variable}r
 
     ! Calcul des différentes valeurs de a_k_alpha
     ! le temps d'éxécution de cette boucle est suffisament faible
     ! pour réduire le temps d'éxécution cumulés, on propose que Nk noeud calcule une valeur
     ! puis la propage a tous les autres noeuds
     ! Recupere la quantité de travaille
+    ALLOCATE(Va(Nk))
+    Va = 0._rp
+
     Nj = GET_JOB_SIZE(nprocs, rang, Nk)
     Nstart = GET_JOB_START(nprocs, rang, Nk)
+
     DO k = Nstart, Nstart + Nj - 1, 1
         kr = REAL(k, rp)
         ! on calcule le coeff a_k^\alpha
         Va(k) = a_k_alpha(k, alpha)
-        CALL MPI_BCAST(Va(k), 1, MPI_DOUBLE_PRECISION, rang, MPI_COMM_WORLD)
     END DO
-    CALL MPI_Barrier(MPI_COMM_WORLD)
-
+    CALL MPI_ALLREDUCE(MPI_IN_PLACE, Va, Nk, MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD)
     ! On attends que tous les noeuds ait bien reçu les éléments.
+    CALL MPI_Barrier(MPI_COMM_WORLD)
 
     t0 = MPI_Wtime()
     ! Recupere la quantité de travaille
-
     Nj = GET_JOB_SIZE(nprocs, rang, Nx * Ny * Nk)
     Nstart = GET_JOB_START(nprocs, rang, Nx * Ny * Nk)
-
-    IF(rang==0) THEN
-        PRINT*, 'total ', Nx * Ny * Nk
-    END IF
-
-    Print*, 'Nbr  ; ',Nj
-    PRINT*, 'start: ', Nstart
-    ! on calcule le coeff a_k^\alpha
 
     ! On fait une boucle sur les indices i,j et k de maniere lineaire
     DO N = Nstart, Nstart + Nj - 1, 1
         ! On calcule i j et k a partir de la position lineaire
-        CALL LINEARTO2D(N,Nk,Nx*Ny,k,Nik)
-        CALL LINEARTO2D(Nik,Nx,Ny,i,j)
+        CALL LINEARTO2D(N, Nk, Nx * Ny, k, Nik)
+        CALL LINEARTO2D(Nik, Nx, Ny, i, j)
+
         kr = REAL(k, rp)
         down_k = SINH(B * kr * PI / L)
         up_y = SINH((B - Y(j)) * kr * PI / L)
@@ -97,8 +89,6 @@ PROGRAM MAIN_PARALLEL
     END DO
 
     CALL MPI_Barrier(MPI_COMM_WORLD)
-    t1 = MPI_Wtime()
-
 
     ! Le processus 0 doit maintenant recevoir les données
     ! Pour ce faire on utilise une reduction sur les tableaux
@@ -108,6 +98,7 @@ PROGRAM MAIN_PARALLEL
         CALL MPI_REDUCE(U, U_final, Nx * Ny, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
     END IF
     CALL MPI_Barrier(MPI_COMM_WORLD)
+    t1 = MPI_Wtime()
     ! On sauvegarde alors
     IF(rang ==0) THEN
         !        OPEN(unit = 42, file = filename, status = 'replace')

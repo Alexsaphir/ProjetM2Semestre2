@@ -19,19 +19,19 @@ CONTAINS
 
         INTEGER :: GET_JOB_START
 
-        INTEGER :: N_TASK_SUP
+        INTEGER :: N_TASK_SUP, count
 
         ! On est sur que chaque processus a au moins fait le minimum requis
-        GET_JOB_START = rang * N / nprocs
+        count = N / nprocs
         ! on doit maintenant savoir le nombre de processus qui ont du faire un calcul de plus
         ! on sait que l'on a MODULO(Nk, nprocs) tache restante
         N_TASK_SUP = MODULO(N, nprocs)
 
         IF(rang<N_TASK_SUP)THEN
-            GET_JOB_START = GET_JOB_START + rang + 1
+            GET_JOB_START = (count+1) * rang +1
         ELSE
             ! on sait que toutes les taches sup ont été traités par les processus inférieur
-            GET_JOB_START = GET_JOB_START + N_TASK_SUP + 1
+            GET_JOB_START = rang * count + N_TASK_SUP + 1
         END IF
 
     END FUNCTION GET_JOB_START
@@ -68,7 +68,7 @@ CONTAINS
         INTEGER, INTENT(OUT) :: i, j
 
         j = (N - 1) / Ni + 1
-        i = MOD(N-1,Ni) +1
+        i = MOD(N - 1, Ni) + 1
     END SUBROUTINE
 
     FUNCTION ARRAY3DTOLINEAR(i, j, k, Ni, Nj, Nk)
@@ -76,6 +76,6 @@ CONTAINS
         INTEGER, INTENT(IN) :: i, j, k
         INTEGER :: ARRAY3DTOLINEAR
 
-        ARRAY3DTOLINEAR = k + (i-1)*Nk + (j-1)*Ni
+        ARRAY3DTOLINEAR = k + (i - 1) * Nk + (j - 1) * Ni
     END FUNCTION ARRAY3DTOLINEAR
 END MODULE COMMON
