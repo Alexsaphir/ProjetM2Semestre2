@@ -27,7 +27,7 @@ PROGRAM MAIN_PARALLEL
 
     IF(rang == 0) THEN
         CALL LOAD_PARAMETRE_MPI(rang)
-        PRINT*, 'Résolution du problème avec ', nprocs, 'processus'
+!        PRINT*, 'Résolution du problème avec ', nprocs, 'processus'
     END IF
     ! Charge-les parametres en utilisant des namelistes
     ! Pour éviter de surcharger le disque en io sur un fichier le rang 0 charge les valeurs et les propages
@@ -73,19 +73,22 @@ PROGRAM MAIN_PARALLEL
 
     t0 = MPI_Wtime()
     ! Recupere la quantité de travaille
-    Nj = GET_JOB_SIZE(nprocs, rang, Nx * Ny * Nk)
-    Nstart = GET_JOB_START(nprocs, rang, Nx * Ny * Nk)
+    Nj = GET_JOB_SIZE(nprocs, rang, Nx * Ny)
+    Nstart = GET_JOB_START(nprocs, rang, Nx * Ny)
 
     ! On fait une boucle sur les indices i,j et k de maniere lineaire
+    DO k=1,Nk
     DO N = Nstart, Nstart + Nj - 1, 1
         ! On calcule i j et k a partir de la position lineaire
-        CALL LINEARTO2D(N, Nk, Nx * Ny, k, Nik)
-        CALL LINEARTO2D(Nik, Nx, Ny, i, j)
+!        CALL LINEARTO2D(N, Nk, Nx * Ny, k, Nik)
+!        CALL LINEARTO2D(Nik, Nx, Ny, i, j)
+        CALL LINEARTO2D(N, Ny,Nx, j,i)
 
         kr = REAL(k, rp)
         down_k = SINH(B * kr * PI / L)
         up_y = SINH((B - Y(j)) * kr * PI / L)
         U(i, j) = U(i, j) + Va(k) * up_y * SIN(kr * PI * X(i) / L) / down_k
+    END DO
     END DO
 
     CALL MPI_Barrier(MPI_COMM_WORLD)
@@ -100,16 +103,15 @@ PROGRAM MAIN_PARALLEL
     CALL MPI_Barrier(MPI_COMM_WORLD)
     t1 = MPI_Wtime()
     ! On sauvegarde alors
+
     IF(rang ==0) THEN
-        !        OPEN(unit = 42, file = filename, status = 'replace')
-        !        DO i = 1, Nx
-        !            WRITE(42, *) (U_final(i, j), j = 1, Ny)
-        !        END DO
-        PRINT*, 'Elapsed : ', t1 - t0
-        PRINT*, 'Valeur Max : ', MAXVAL(U_final)
+        OPEN(unit = 42, file = filename, status = 'replace')
+        DO i = 1, Nx
+            WRITE(42, *) (U_final(i, j), j = 1, Ny)
+        END DO
+!        PRINT*, 'Elapsed : ', t1 - t0
+!        PRINT*, 'Valeur Max : ', MAXVAL(U_final)
     END IF
 
     CALL MPI_FINALIZE(ierr)
-
-CONTAINS
 END PROGRAM MAIN_PARALLEL

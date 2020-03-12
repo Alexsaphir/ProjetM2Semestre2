@@ -16,7 +16,7 @@ PROGRAM MAIN_PARALLEL
     REAL(rp), DIMENSION(:, :), ALLOCATABLE :: U, U_final
     REAL(rp), DIMENSION(:), ALLOCATABLE :: Y, X
     REAL(rp) :: a, up_y, down_k, kr
-    REAL(dp) :: t0,t1
+    REAL(dp) :: t0, t1
     INTEGER :: Nj, Nstart
     INTEGER :: k, i, j
 
@@ -28,7 +28,7 @@ PROGRAM MAIN_PARALLEL
 
     IF(rang == 0) THEN
         CALL LOAD_PARAMETRE_MPI(rang)
-        PRINT*, 'Calcul de U sur la grille avec ', nprocs, 'processus'
+!        PRINT*, 'Calcul de U sur la grille avec ', nprocs, 'processus'
     END IF
     ! Charge-les parametres en utilisant des namelistes
     ! Pour éviter de surcharger le disque en io sur un fichier le rang 0 charge les valeurs et les propages
@@ -48,7 +48,7 @@ PROGRAM MAIN_PARALLEL
     ! Recupere la quantité de travaille
     Nj = GET_JOB_SIZE(nprocs, rang, Nk)
     Nstart = GET_JOB_START(nprocs, rang, Nk)
-    PRINT*, 'Moi processus ', rang, ', je dois faire ', Nj, ' point.'
+
     ! Chaque processus calcul sa partie
 
     ! L'utilisation de la forme {variable}_{indice} permet de représenter la dépandance de {variable}
@@ -72,9 +72,9 @@ PROGRAM MAIN_PARALLEL
     ! Le processus 0 doit maintenant recevoir les données
     ! Pour ce faire on utilise une reduction sur les tableaux
     IF (rang==0) THEN
-        CALL MPI_REDUCE(U, U_final, Nx * Ny , MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
+        CALL MPI_REDUCE(U, U_final, Nx * Ny, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
     ELSE
-        CALL MPI_REDUCE(U, U_final, Nx * Ny , MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
+        CALL MPI_REDUCE(U, U_final, Nx * Ny, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
     END IF
     t1 = MPI_Wtime()
     ! On sauvegarde alors
@@ -83,8 +83,8 @@ PROGRAM MAIN_PARALLEL
         DO i = 1, Nx
             WRITE(42, *) (U_final(i, j), j = 1, Ny)
         END DO
-        PRINT*,'Elapsed : ', t1-t0
-        PRINT*, 'Valeur Max : ', MAXVAL(U_final)
+!        PRINT*, 'Elapsed : ', t1 - t0
+!        PRINT*, 'Valeur Max : ', MAXVAL(U_final)
     END IF
 
     CALL MPI_FINALIZE(ierr)

@@ -11,6 +11,8 @@ ADD_DEFINITIONS(${MPI_Fortran_COMPILE_FLAGS})
 INCLUDE_DIRECTORIES(${MPI_Fortran_INCLUDE_DIRS})
 LINK_DIRECTORIES(${MPI_FortranLIBRARY_DIRS})
 
+set (CMAKE_Fortran_FLAGS "-funroll-all-loops -O3 -ipo -xHost -xHost -g")
+
 ADD_EXECUTABLE(projet_seq src/main_sequential.f90
         src/constantes.f90
         src/common.f90
