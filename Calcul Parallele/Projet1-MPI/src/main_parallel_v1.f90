@@ -18,7 +18,7 @@ PROGRAM MAIN_PARALLEL
     REAL(rp) :: a, up_y, down_k, kr
     REAL(dp) :: t0, t1
     INTEGER :: Nj, Nstart,N
-    INTEGER :: k, i, j
+    INTEGER :: k, i, j,Nik
     REAL(rp), DIMENSION(:), ALLOCATABLE :: Va
 
     ! initialisation
@@ -73,24 +73,27 @@ PROGRAM MAIN_PARALLEL
 
     t0 = MPI_Wtime()
     ! Recupere la quantité de travaille
+
     Nj = GET_JOB_SIZE(nprocs, rang, Nx * Ny * Nk)
     Nstart = GET_JOB_START(nprocs, rang, Nx * Ny * Nk)
+
+    IF(rang==0) THEN
+        PRINT*, 'total ', Nx * Ny * Nk
+    END IF
+
+    Print*, 'Nbr  ; ',Nj
+    PRINT*, 'start: ', Nstart
     ! on calcule le coeff a_k^\alpha
-    CALL LINEARTO2D
+
     ! On fait une boucle sur les indices i,j et k de maniere lineaire
     DO N = Nstart, Nstart + Nj - 1, 1
         ! On calcule i j et k a partir de la position lineaire
-        CALL LINEARTO2D(N)
-    END DO
-    DO j = 1, Ny
-        DO i = 1, Nx
-            DO k = 1, Nk, 1
-                kr = REAL(k, rp)
-                down_k = SINH(B * kr * PI / L)
-                up_y = SINH((B - Y(j)) * kr * PI / L)
-                U(i, j) = U(i, j) + Va(k) * up_y * SIN(kr * PI * X(i) / L) / down_k
-            END DO
-        END DO
+        CALL LINEARTO2D(N,Nk,Nx*Ny,k,Nik)
+        CALL LINEARTO2D(Nik,Nx,Ny,i,j)
+        kr = REAL(k, rp)
+        down_k = SINH(B * kr * PI / L)
+        up_y = SINH((B - Y(j)) * kr * PI / L)
+        U(i, j) = U(i, j) + Va(k) * up_y * SIN(kr * PI * X(i) / L) / down_k
     END DO
 
     CALL MPI_Barrier(MPI_COMM_WORLD)
@@ -104,7 +107,7 @@ PROGRAM MAIN_PARALLEL
     ELSE
         CALL MPI_REDUCE(U, U_final, Nx * Ny, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
     END IF
-
+    CALL MPI_Barrier(MPI_COMM_WORLD)
     ! On sauvegarde alors
     IF(rang ==0) THEN
         !        OPEN(unit = 42, file = filename, status = 'replace')

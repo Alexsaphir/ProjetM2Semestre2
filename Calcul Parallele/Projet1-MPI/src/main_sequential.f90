@@ -21,14 +21,10 @@ PROGRAM  MAIN_SEQ
     ! Chargement des parametres stockés dans le module parametre
     CALL LOAD_PARAMETRE
     CALL PRINT_PARAMETRE
-    t0 = MPI_Wtime()
+!    t0 = MPI_Wtime()
     ! Allocation de la grille de calcul
     ALLOCATE(U(Nx, Ny))
 
-
-    CALL LINEARTO2D(4,3,2,i,j)
-    PRINT*, 'i=',i,', j=',j
-    STOP
     ! Initialisation à 0
     DO j = 1, Ny
         DO i = 1, Nx
@@ -54,7 +50,7 @@ PROGRAM  MAIN_SEQ
         END DO
     END DO
 
-    t1 = MPI_Wtime()
+!    t1 = MPI_Wtime()
     ! Sauvegarde du résultat obtenu
     OPEN(unit = 42, file = filename, status = 'replace')
     DO i = 1, Nx
