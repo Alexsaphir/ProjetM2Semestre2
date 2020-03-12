@@ -2,18 +2,21 @@ real mu(0.5);
 real aa(1);
 real bb(1);
 
+real R1(2);
+real R2(1);
 // Définition des bords du problème: a,b
-border a(t=0, 2*pi){x=cos(t);y=sin(t);label=1;}
-border b(t=0, 2*pi){x=0.3*cos(t);y=0.3*sin(t);label=2;}
+border Gamma_c(t=0, 2*pi){x=R1*cos(t);y=R1*sin(t);label=1;}
+
+border Gamma_i(t=0, 2*pi){x=R2*cos(t);y=R2*sin(t);label=2;}
 
 // Définition du domaine étudié: Sh
-mesh Sh=buildmesh(a(180)+b(-60)); // generation mesh
+mesh Th=buildmesh(Gamma_c(180)+Gamma_i(-60)); // generation mesh
 
 // Affichage du domaine utilisé
-plot(Sh);
+plot(Th);
 
 // Définition de l'espace de fonction base: Vh
-fespace Vh(Sh,P1);
+fespace Vh(Th,P1);
 
 // Liste de fonction dans Vh: u,v,...
 Vh u,v,upair,uimpair;

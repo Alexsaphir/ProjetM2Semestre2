@@ -16,8 +16,8 @@ PROGRAM MAIN_PARALLEL
     REAL(rp), DIMENSION(:, :), ALLOCATABLE :: U, U_final
     REAL(rp), DIMENSION(:), ALLOCATABLE :: Y, X
     REAL(rp) :: a, up_y, down_k, kr
-    REAL(dp) :: t0,t1
-    INTEGER :: Nj, Nstart
+    REAL(dp) :: t0, t1
+    INTEGER :: Nj, Nstart,N
     INTEGER :: k, i, j
     REAL(rp), DIMENSION(:), ALLOCATABLE :: Va
 
@@ -46,10 +46,6 @@ PROGRAM MAIN_PARALLEL
     CALL RANGE(L, Nx, X)
     CALL RANGE(B, Ny, Y)
 
-    ! Recupere la quantité de travaille
-    Nj = GET_JOB_SIZE(nprocs, rang,Nk)
-    Nstart = GET_JOB_START(nprocs, rang,Nk)
-    PRINT*, 'Moi processus ', rang, ', je dois faire ', Nj, ' point.'
     ! Chaque processus calcul sa partie
 
     ! L'utilisation de la forme {variable}_{indice} permet de représenter la dépandance de {variable}
@@ -58,26 +54,45 @@ PROGRAM MAIN_PARALLEL
 
     ALLOCATE(Va(Nk))
 
-    t0 = MPI_Wtime()
-    DO k=1, Nk
-        kr = REAL(k, rp)
-        ! on calcule le coeff a_k^\alpha
-        Va(k) = a_k_alpha(k, alpha)
-    END DO
-
-    t0 = MPI_Wtime()
+    ! Calcul des différentes valeurs de a_k_alpha
+    ! le temps d'éxécution de cette boucle est suffisament faible
+    ! pour réduire le temps d'éxécution cumulés, on propose que Nk noeud calcule une valeur
+    ! puis la propage a tous les autres noeuds
+    ! Recupere la quantité de travaille
+    Nj = GET_JOB_SIZE(nprocs, rang, Nk)
+    Nstart = GET_JOB_START(nprocs, rang, Nk)
     DO k = Nstart, Nstart + Nj - 1, 1
         kr = REAL(k, rp)
         ! on calcule le coeff a_k^\alpha
-        a = a_k_alpha(k, alpha)
-        down_k = SINH(B * kr * PI / L)
-        DO j = 1, Ny
-            up_y = SINH((B - Y(j)) * kr * PI / L)
-            DO i = 1, Nx
-                U(i, j) = U(i, j) + a * up_y * SIN(kr * PI * X(i) / L) / down_k
+        Va(k) = a_k_alpha(k, alpha)
+        CALL MPI_BCAST(Va(k), 1, MPI_DOUBLE_PRECISION, rang, MPI_COMM_WORLD)
+    END DO
+    CALL MPI_Barrier(MPI_COMM_WORLD)
+
+    ! On attends que tous les noeuds ait bien reçu les éléments.
+
+    t0 = MPI_Wtime()
+    ! Recupere la quantité de travaille
+    Nj = GET_JOB_SIZE(nprocs, rang, Nx * Ny * Nk)
+    Nstart = GET_JOB_START(nprocs, rang, Nx * Ny * Nk)
+    ! on calcule le coeff a_k^\alpha
+    CALL LINEARTO2D
+    ! On fait une boucle sur les indices i,j et k de maniere lineaire
+    DO N = Nstart, Nstart + Nj - 1, 1
+        ! On calcule i j et k a partir de la position lineaire
+        CALL LINEARTO2D(N)
+    END DO
+    DO j = 1, Ny
+        DO i = 1, Nx
+            DO k = 1, Nk, 1
+                kr = REAL(k, rp)
+                down_k = SINH(B * kr * PI / L)
+                up_y = SINH((B - Y(j)) * kr * PI / L)
+                U(i, j) = U(i, j) + Va(k) * up_y * SIN(kr * PI * X(i) / L) / down_k
             END DO
         END DO
     END DO
+
     CALL MPI_Barrier(MPI_COMM_WORLD)
     t1 = MPI_Wtime()
 
@@ -85,18 +100,18 @@ PROGRAM MAIN_PARALLEL
     ! Le processus 0 doit maintenant recevoir les données
     ! Pour ce faire on utilise une reduction sur les tableaux
     IF (rang==0) THEN
-        CALL MPI_REDUCE(U, U_final, Nx * Ny , MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
+        CALL MPI_REDUCE(U, U_final, Nx * Ny, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
     ELSE
-        CALL MPI_REDUCE(U, U_final, Nx * Ny , MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
+        CALL MPI_REDUCE(U, U_final, Nx * Ny, MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
     END IF
 
     ! On sauvegarde alors
     IF(rang ==0) THEN
-!        OPEN(unit = 42, file = filename, status = 'replace')
-!        DO i = 1, Nx
-!            WRITE(42, *) (U_final(i, j), j = 1, Ny)
-!        END DO
-        PRINT*,'Elapsed : ', t1-t0
+        !        OPEN(unit = 42, file = filename, status = 'replace')
+        !        DO i = 1, Nx
+        !            WRITE(42, *) (U_final(i, j), j = 1, Ny)
+        !        END DO
+        PRINT*, 'Elapsed : ', t1 - t0
         PRINT*, 'Valeur Max : ', MAXVAL(U_final)
     END IF
 

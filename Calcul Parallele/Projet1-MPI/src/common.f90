@@ -62,4 +62,20 @@ CONTAINS
             X(i) = X(i - 1) + ds
         END DO
     END SUBROUTINE RANGE
+
+    SUBROUTINE LINEARTO2D(N, Ni, Nj, i, j)
+        INTEGER, INTENT(IN) :: N, Ni, Nj
+        INTEGER, INTENT(OUT) :: i, j
+
+        j = (N - 1) / Ni + 1
+        i = MOD(N-1,Ni) +1
+    END SUBROUTINE
+
+    FUNCTION ARRAY3DTOLINEAR(i, j, k, Ni, Nj, Nk)
+        INTEGER, INTENT(IN) :: Nk, Ni, Nj
+        INTEGER, INTENT(IN) :: i, j, k
+        INTEGER :: ARRAY3DTOLINEAR
+
+        ARRAY3DTOLINEAR = k + (i-1)*Nk + (j-1)*Ni
+    END FUNCTION ARRAY3DTOLINEAR
 END MODULE COMMON
