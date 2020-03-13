@@ -1,30 +1,29 @@
 #include "gridfd.h"
 
 #include <iostream>
+#include <numeric>
 
 GridFD::GridFD()
 {
 	this->m_f.resize(m_Nx, std::vector<double>(m_Nv, 0.));
 	this->m_E.resize(m_Nx, 0.);
-	this->m_rho.resize(m_Nx,0.);
+	this->m_rho.resize(m_Nx, 0.);
+
+	dx = 1. / static_cast<double>(m_Nx);
+	dv = 1. / static_cast<double>(2. * m_Nv);
 }
 
-GridFD::GridFD(double L, double Vmax, uint Nx, uint Nv)
-	: m_L {L}, m_Vmax {Vmax}, m_Nx {Nx}, m_Nv {Nv}
+GridFD::GridFD(double L, double Vmax, uint Nx, uint Nv) : m_L {L}, m_Vmax {Vmax}, m_Nx {Nx}, m_Nv {Nv}
 {
 	this->m_f.resize(m_Nx, std::vector<double>(m_Nv, 0.));
 	this->m_E.resize(m_Nx, 0.);
-	this->m_rho.resize(m_Nx,0.);
+	this->m_rho.resize(m_Nx, 0.);
+
+	dx = 1. / static_cast<double>(m_Nx);
+	dv = 1. / static_cast<double>(2. * m_Nv);
 }
 
-GridFD::GridFD(argGrid arg)
-{
-	m_L = arg.L;
-	m_Vmax = arg.Vmax;
-	m_Nv = arg.Nv;
-	m_Nx = arg.Nx;
-}
-
+// Obtention des dimensions du domaine
 double GridFD::getL() const
 {
 	return m_L;
@@ -35,6 +34,7 @@ double GridFD::getVmax() const
 	return m_Vmax;
 }
 
+// Obtention des dimension du maillage
 uint GridFD::getNx() const
 {
 	return m_Nx;
@@ -45,14 +45,15 @@ uint GridFD::getNv() const
 	return m_Nv;
 }
 
+// Obtention
 double GridFD::getX(int i) const
 {
-	return static_cast<double>(i) * m_L * (1. / static_cast<double>(m_Nx));
+	return static_cast<double>(i) * m_L * dx;
 }
 
 double GridFD::getV(int i) const
 {
-	return static_cast<double>(i) * m_Vmax * (1. / static_cast<double>(m_Nv)) - m_Vmax;
+	return static_cast<double>(i) * m_Vmax * dv - m_Vmax;
 }
 
 double GridFD::E(int p) const
@@ -87,9 +88,13 @@ double& GridFD::Rho(int p)
 
 void GridFD::print() const
 {
-	for (auto V : m_f)
+	std::cout << "-------";
+	for (int i = 0; i < m_Nx; ++i)
+		std::cout << getX(i) << ' ';
+	std::cout << '\n';
+	for (const auto& V : m_f)
 	{
-		for (auto d : V)
+		for (const auto& d : V)
 		{
 			std::cout << d << ' ';
 		}
@@ -110,3 +115,26 @@ void GridFD::init_f(double f0(double x, double v))
 	}
 }
 
+void GridFD::computeElectricCharge()
+{
+	for (int i = 0; i < m_Nx; ++i)
+	{
+		double sum	= std::accumulate(m_f.at(i).begin(), m_f.at(i).end(), 0.);
+		m_rho.at(i) = dv * sum;
+	}
+}
+
+void GridFD::computeElectricField()
+{
+	m_E.at(0) = 0.;
+	for (int i = 1; i < m_Nx; ++i)
+	{
+		m_E.at(i) = m_E.at(i - 1) + dx * (1. - m_rho.at(i));
+	}
+
+	// Calcul la moyenne
+	double avg = std::accumulate(m_E.begin(), m_E.end(), 0.) / m_Nx;
+
+	for (int i = 0; i < m_Nx; ++i)
+		m_E.at(i) -= avg;
+}

@@ -1,21 +1,21 @@
-//https://dsp.stackexchange.com/a/56626
+// https://dsp.stackexchange.com/a/56626
 
+#include <cmath>
 #include <iostream>
 
 #include "gridfd.h"
 
-double ma_fonction(double e,double x,double v );
-
-struct A{
-	double a{10};
-	double b{20};
-};
+double f0(double x, double v, double epsilon, double L)
+{
+	double k = 2. * M_PI / L;
+	return (1. + epsilon * std::cos(k * x)) * std::exp(-v * v / 2.) / std::sqrt(2. * M_PI);
+}
 int main()
 {
 	std::cout << "Hello, World!" << std::endl;
-	GridFD G(1, 1, 3, 3);
+	GridFD G(1, 1, 5, 5);
+	G.init_f( [](double x, double v){ return f0(x,v,.005, 1.);});
 	G.print();
-	double c,d;
 
 	return 0;
 }
