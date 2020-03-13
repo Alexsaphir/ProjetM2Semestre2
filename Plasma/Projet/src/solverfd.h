@@ -6,17 +6,9 @@
 class solverDF
 {
 public:
-	struct argSolver
-	{
-		double dt;
-		double t;
-		double T;
-		argGrid grid;
-	};
+	solverDF(double dt, double T, double L, double Vmax, uint Nx, uint Nv);
 
-public:
-	solverDF();
-	solverDF(argSolver arg);
+	void solveE();
 
 private:
 	double m_dt{.00001};
