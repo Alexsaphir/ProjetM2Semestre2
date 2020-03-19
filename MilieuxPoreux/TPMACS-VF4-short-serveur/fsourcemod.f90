@@ -1,0 +1,121 @@
+Module fsourcemod
+
+Contains
+
+ !======================================================
+!=====================================================
+  FUNCTION gbord(x,y,m)
+    ! Calcul la solution exacte de l'equation
+    !--------
+    ! Modules
+    !--------
+    USE longr
+
+    IMPLICIT NONE
+
+    !--------------------------
+    ! Declaration des arguments
+    !--------------------------
+    REAL(kind=long), INTENT(in)     :: x, y
+    integer :: m
+    REAL(kind=long)                 :: gbord
+    !----------------------------------
+    ! Declaration des variables locales
+    !----------------------------------
+    CHARACTER(len=6)      :: oldprf
+    REAL(kind=long)                 :: pi
+
+    !-------------------
+    ! Debut du programme
+    !-------------------
+    oldprf = prefix
+    prefix = 'Gbord'
+
+    !------
+    ! Corps
+    !------
+    pi = 4.D0*ATAN(1.D0)
+
+    select case(m)
+    case(1)
+       gbord = 1.
+    case(2)
+       gbord  = x+y
+    case(3) 
+       gbord  =
+    case(4)
+       gbord =
+    case(5)
+       gbord = 
+    case(6)
+       gbord= 
+    case default 
+       print*, ' pb gbord'
+       stop
+    end select
+    !-----------------
+    ! Fin du programme
+    !-----------------
+    prefix = oldprf
+
+    RETURN
+  END FUNCTION gbord
+
+
+
+
+FUNCTION fsource(x,y, m)
+    !--------
+    ! Modules
+    !--------
+    USE longr
+
+    IMPLICIT NONE
+
+    !--------------------------
+    ! Declaration des arguments
+    !--------------------------
+    REAL(kind=long), INTENT(in)     :: x , y
+    Integer :: m
+    REAL(kind=long)                 :: fsource
+    !----------------------------------
+    ! Declaration des variables locales
+    !----------------------------------
+    CHARACTER(len=6)                :: oldprf
+    REAL(kind=long)                 :: pi
+    REAL(kind=long) ::lea,leaa
+    !-------------------
+    ! Debut du programme
+    !-------------------
+    oldprf = prefix
+    prefix = 'FSOUR'
+
+
+    !------
+    ! Corps
+    !------
+    pi=4.D0*ATAN(1.D0)
+    Select case (m)
+    case(1)
+       fsource =   theta
+    case (2)
+       fsource  = theta *(x+y)
+    case (3)
+       fsource = 
+    case(4)
+       fsource =  
+    case(5)
+       fsource = 
+    case(6)
+       fsource = 
+    end Select
+    !----------------
+    ! Fin du programme
+    !-----------------
+    prefix = oldprf
+
+    RETURN
+  END FUNCTION fsource
+
+
+END Module fsourcemod
