@@ -1,0 +1,20 @@
+&conf
+L=3.14159265359
+B=1.
+alpha = 0.01
+Ns = 7500 ! Nombre de sous intervalles pr l'intégrale
+Nk = 50 ! Nombre de k utilisés dans la somme
+Nx = 2000 ! Nombre de point ds la grille en x
+Ny = 2000 ! Nombre de point ds la grille en y
+filename = "data.out"
+/
+
+&articleSol
+solN = 5
+/
+
+&conv
+Kmax = 200
+fileconv = "conv.csv"
+/
+

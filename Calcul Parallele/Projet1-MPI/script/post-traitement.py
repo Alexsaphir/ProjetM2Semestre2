@@ -31,6 +31,7 @@ def main():
     #
     # X, Y = np.meshgrid(x, y)  # `plot_surface` expects `x` and `y` data to be 2D
     # ha.plot_surface(X, Y, data)
+    # plt.show()
     #
     plt.plot(x, data)
     plt.show()
