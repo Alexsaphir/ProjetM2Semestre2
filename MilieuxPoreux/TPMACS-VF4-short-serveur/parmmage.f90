@@ -1,3 +1,6 @@
+! Ce module définit les param du maillage de type MAILLAGEGEO
+! un type de matrice creux y est aussi implémenté
+
 module parmmage
   !------------------------------------------------------------------
   ! On definit ici les parametres du maillage
