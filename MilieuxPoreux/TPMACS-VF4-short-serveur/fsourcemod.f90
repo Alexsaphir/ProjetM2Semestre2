@@ -42,13 +42,13 @@ Contains
     case(2)
        gbord  = x+y
     case(3) 
-       gbord  =
+       gbord  = x*x + y*y
     case(4)
-       gbord =
+       gbord = COS(5.*pi*(x+y))
     case(5)
-       gbord = 
+       gbord = x*(1.-x)*y*(1.-y)
     case(6)
-       gbord= 
+       gbord= SIN(pi*x)*SIN(pi*y)
     case default 
        print*, ' pb gbord'
        stop
