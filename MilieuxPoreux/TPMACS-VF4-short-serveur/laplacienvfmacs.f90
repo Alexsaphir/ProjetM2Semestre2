@@ -3,14 +3,14 @@ PROGRAM laplacienVFmacs
   !     * Programme resoud l'equation de laplace sur un domaine qcq
   !        par la methode 
   !        ** VOLUMES Finis VF4 :
-  !                       schéma à deux points sur un maillage orthogonale
+  !                       sch?ma ? deux points sur un maillage orthogonale
   !       
-  !       Sur le problème :  
+  !       Sur le probl?me :  
   !       - c div( grad u ) + theta * u div(Vu)= F    dans omega
   !                u=Gdb                      sur gamma
   !
   !----------------
-  ! La méthode utilise plusieurs types de maillages : 
+  ! La m?thode utilise plusieurs types de maillages : 
   !---------------------------------------------------------------------
   !========
   ! Modules
@@ -43,7 +43,7 @@ PROGRAM laplacienVFmacs
   CALL init                    !* Initialisation
   print*,  'init ok '  
 
-  ! Lecture du maillage à partir d'un fichier : MAILLAGEGEOx, x=1...6
+  ! Lecture du maillage ? partir d'un fichier : MAILLAGEGEOx, x=1...6
 
   CALL readmesh
   print*,  'readmesh ok '
@@ -85,7 +85,7 @@ PROGRAM laplacienVFmacs
   print*,'assembletheta ok'
 
 
-  ! resloution du système linéaire  par la mathode du gradient conjugué
+  ! resloution du syst?me lin?aire  par la mathode du gradient conjugu?
   ALLOCATE(U(Nbt))
   tol = 5.d-10 
   U = gradconj(A%Bg,  A, tol)
