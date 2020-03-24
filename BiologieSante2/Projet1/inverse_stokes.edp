@@ -1,0 +1,67 @@
+//Maillage du domaine
+
+border intop(t=0, pi){x=cos(t); y=sin(t); label=1;} //cercle interieur divisé en top 
+border inbot(t=pi, 2*pi){x=cos(t); y=sin(t); label=1;} // et bottom, ils on a peu près la meme mesure
+border out(t=0, 2*pi){x=2*cos(t); y=2*sin(t); label=1;}
+mesh Th=buildmesh(out(64)+intop(-12)+inbot(-24));
+
+plot(Th);
+//Expace d'approximation de chaque composante de la vitess
+fespace Vh(Th,P2);
+//Expace d'approximation de la pression
+fespace Wh(Th,P1);
+Vh upair1,upair2,uimpair1,uimpair2; //composantes de la vitesse
+Vh v1,v2; //fonctions tests
+Wh ppair,pimpair; //pression a` calculer
+Wh q; //fonction test
+
+//paramtres
+real nu=1;
+real rho=1;
+//fonctions du terme source
+func g=cos(y);
+func f1 =0;
+func f2 =0;
+
+
+//Problme pair 
+problem pair ([upair1,upair2,ppair],[v1,v2,q],solver=Crout) =
+int2d(Th)(
+nu * ( dx(upair1)*dx(v1) + dy(upair1)*dy(v1)
++ dx(upair2)*dx(v2) + dy(upair2)*dy(v2) )
++ ppair*q*(0.000001) /* ne pas oublier ce terme */
+- ppair*dx(v1) - ppair*dy(v2)
+- dx(upair1)*q - dy(upair2)*q
+)
++ int2d(Th) ( -f1*v1 - f2*v2 )
++int1d(Th,inbot)(dx(upair1)*N.x*v1)
++on(intop,upair1=0.,upair2=0.5)
++on(out,upair1=0.0,upair2=0.0);
+
+
+// condition Neumann a retravailler
+// il faut mettre en place la condition qui lie u_2n et u_2n+1
+
+//Problme impair 
+problem impair ([uimpair1,uimpair2,pimpair],[v1,v2,q],solver=Crout) =
+int2d(Th)(
+nu * ( dx(uimpair1)*dx(v1) + dy(uimpair1)*dy(v1)
++ dx(uimpair2)*dx(v2) + dy(uimpair2)*dy(v2) )
++ pimpair*q*(0.000001) /*ce terme pourra etre supprimé mais pour l'instant je laisse.. */
+- pimpair*dx(v1) - pimpair*dy(v2)
+- dx(uimpair1)*q - dy(uimpair2)*q
+)
++ int2d(Th) ( -f1*v1 - f2*v2 )
++int1d(Th,inbot)(dx(upair1)*N.x*v1) 
++on(intop,uimpair1=g,uimpair2=0.0)
++on(out,uimpair1=0.0,uimpair2=0.0);
+
+
+// Boucle de resolution
+pair;
+
+
+
+//Affichage 
+plot(coef=0.2,cmm=" [upair1,upair2] et p ",ppair,[upair1,upair2],ps="StokesP2P1.eps",value=1,
+wait=1);
