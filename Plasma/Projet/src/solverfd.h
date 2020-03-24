@@ -10,12 +10,12 @@ public:
 	SolverFD(double dt, double T, GridFD &Grid);
 
 	// calcul flux
-	std::vector<double> Fi(uint i);
-	std::vector<double> Fj(uint j);
+	void computeFluxV(uint i);
+	void computeFluxX(uint j);
 
 	// Difference fini en deux étapes avec un splitting
-	void computefUnDemi(double dt);
-	void computeNextf(double dt);
+	void stepTranportV(double dt);
+	void stepTransportX(double dt);
 
 	// encapsulation on va de t=0 à T
 	void computeFD();
@@ -28,6 +28,8 @@ private:
 	double m_T{1.};
 
 	GridFD m_Grid;
+	std::vector<double> FluxX;
+	std::vector<double> FluxV;
 };
 
 #endif // SOLVERFD_H

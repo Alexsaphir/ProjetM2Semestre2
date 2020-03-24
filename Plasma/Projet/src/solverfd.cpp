@@ -4,81 +4,75 @@
 #include <fstream>
 #include <iostream>
 
-SolverFD::SolverFD(double dt, double T, double L, double Vmax, uint Nx, uint Nv) : m_dt(dt), m_t(0.), m_T(T), m_Grid(L, Vmax, Nx, Nv)
+SolverFD::SolverFD(double dt, double T, double L, double Vmax, uint Nx, uint Nv)
+	: m_dt(dt), m_t(0.), m_T(T), m_Grid(L, Vmax, Nx, Nv)
 {
+	FluxX = std::vector<double>(m_Grid.getNx(), 0.);
+	FluxV = std::vector<double>(m_Grid.getNv(), 0.);
 }
 
 SolverFD::SolverFD(double dt, double T, GridFD& Grid) : m_dt(dt), m_t(0.), m_T(T), m_Grid(Grid)
 {
+	FluxX = std::vector<double>(m_Grid.getNx(), 0.);
+	FluxV = std::vector<double>(m_Grid.getNv(), 0.);
+
 }
 
-std::vector<double> SolverFD::Fi(uint i)
+void SolverFD::computeFluxV(uint i)
 {
-	std::vector<double> F;
-
-	F.resize(m_Grid.getNv(), 0.);
-
 	for (uint j = 0; j < m_Grid.getNv(); j++)
 	{
-		F.at(j) = (m_Grid.f(i, j + 1) - m_Grid.f(i, j));
+		FluxV.at(j) = (m_Grid.f(i, j + 1) - m_Grid.f(i, j));
 	}
-
-	return F;
 }
 
-std::vector<double> SolverFD::Fj(uint j)
+void SolverFD::computeFluxX(uint j)
 {
-	std::vector<double> F;
+	for (uint i = 0; i < m_Grid.getNx(); i++)
+	{
+		FluxX.at(i) = (m_Grid.f(i + 1, j) - m_Grid.f(i, j));
+	}
+}
 
-	F.resize(m_Grid.getNx(), 0.);
+void SolverFD::stepTranportV(double dt)
+{
+	double dv = m_Grid.getDv();
+	double Nv = m_Grid.getNv();
 
 	for (uint i = 0; i < m_Grid.getNx(); i++)
 	{
-		F.at(i) = (m_Grid.f(i + 1, j) - m_Grid.f(i, j));
-	}
-
-	return std::move(F);
-}
-
-void SolverFD::computefUnDemi(double dt)
-{
-	double				dv = m_Grid.getDv();
-	double				Nv = m_Grid.getNv();
-	std::vector<double> F;
-
-	for (uint i = 0; i < m_Grid.getNx() + 1; i++)
-	{
-		F = this->Fi(i);
-		for (uint j = 0; j < m_Grid.getNv() - 1; j++)
+		computeFluxV(i);
+		for (uint j = 1; j < Nv; j++)
 		{
-			m_Grid.f(i, j) = m_Grid.f(i, j) + (dt / dv) * (std::max(0., m_Grid.E(i)) * F.at(j) + std::min(0., m_Grid.E(i)) * F.at(j + 1));
+			m_Grid.f(i, j) += (dt / dv)
+							  * (std::max(0., m_Grid.E(i)) * FluxV.at(j-1)
+								 + std::min(0., m_Grid.E(i)) * FluxV.at(j));
 		}
-
-		// f n+1/2 en 0 avec f périodique sur [-Vmax,Vmax]
-		m_Grid.f(i, 0) = m_Grid.f(i, 0) + (dt / dv) * (std::max(0., m_Grid.E(i)) * F.at(Nv - 1) + std::min(0., m_Grid.E(i)) * F.at(0));
-		// f n+1/2 en Nv avec f périodique sur [-Vmax,Vmax]
-		m_Grid.f(i, Nv) = m_Grid.f(i, Nv) + (dt / dv) * (std::max(0., m_Grid.E(i)) * F.at(Nv - 1) + std::min(0., m_Grid.E(i)) * F.at(0));
+		m_Grid.f(i, 0) += (dt / dv)
+						  * (std::max(0., m_Grid.E(i)) * FluxV.at(Nv-1)
+							 + std::min(0., m_Grid.E(i)) * FluxV.at(0));
 	}
 }
 
-void SolverFD::computeNextf(double dt)
+void SolverFD::stepTransportX(double dt)
 {
-	double				dx = m_Grid.getDx();
-	double				Nx = m_Grid.getNx();
-	std::vector<double> F;
+	double dx = m_Grid.getDx();
+	double Nx = m_Grid.getNx();
 
 	for (uint j = 0; j < m_Grid.getNv(); j++)
 	{
-		F = this->Fj(j);
-		for (uint i = 1; i < m_Grid.getNx() - 1; i++)
+		computeFluxX(j);
+		for (uint i = 1; i < Nx; i++)
 		{
-			m_Grid.f(i, j) = m_Grid.f(i, j)
-							 - (dt / dx) * (std::max(0., m_Grid.getV(j)) * F.at(i) + std::min(0., m_Grid.getV(j)) * F.at(i + 1));
+			m_Grid.f(i, j) -= (dt / dx)
+							  * (std::max(0., m_Grid.getV(j)) * FluxX.at(i - 1)
+								 + std::min(0., m_Grid.getV(j)) * FluxX.at(i));
 		}
-		m_Grid.f(0, j) = m_Grid.f(0, j)
-						 - (dt / dx) * (std::max(0., m_Grid.getV(j)) * F.at(Nx - 1) + std::min(0., m_Grid.getV(j)) * F.at(0));
-		m_Grid.f(Nx, j) = m_Grid.f(Nx, j)
-						  - (dt / dx) * (std::max(0., m_Grid.getV(j)) * F.at(Nx - 1) + std::min(0., m_Grid.getV(j)) * F.at(0));
+
+		m_Grid.f(0, j) -= (dt / dx)
+						  * (std::max(0., m_Grid.getV(j)) * FluxX.at(Nx-1)
+							 + std::min(0., m_Grid.getV(j)) * FluxX.at(0));
+
 	}
 }
 
@@ -92,14 +86,12 @@ void SolverFD::computeFD()
 		//		m_Grid.print();
 		m_Grid.computeElectricField();
 		out << m_t << ',' << m_Grid.electricEnergy() << '\n';
-
-		std::cout << m_Grid.maxElectricField() << '\n';
 		dt = std::min({m_Grid.getDv() / m_Grid.maxElectricField(), m_Grid.getDx() / m_Grid.getVmax(), m_dt});
 
-		computefUnDemi(dt);
-			computeNextf(dt);
-		m_t +=dt;
-		std::cout << "Le temps passe : " << m_t << std::endl;
+		stepTranportV(dt);
+		stepTransportX(dt);
+		m_t += dt;
+		std::cout << "Le temps écoulé : " << m_t << std::endl;
 	}
 
 	//	m_Grid.print();
