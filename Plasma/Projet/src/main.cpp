@@ -9,15 +9,25 @@
 double f0(double x, double v, double epsilon, double L)
 {
 	double k = 2. * M_PI / L;
+//	return std::exp(-v*v/2 - (x-.5)*(x-.5)/(2.*.01))/(M_PI/5.);
 	return (1. + epsilon * std::cos(k * x)) * std::exp(-v * v / 2.) / std::sqrt(2. * M_PI);
+
 }
 int main()
 {
+	std::cout << f0(0,0,0,1) << '\n';
+
 	std::cout << "Hello, World!" << std::endl;
-	GridFD G(1., 10., 5, 5);
-	G.init_f([](double x, double v) { return f0(x, v, .005, 1.); });
-	solverFD S(0.00001, 1., G);
+	GridFD G(4.*M_PI, 10., 100, 500);
+	G.init_f([](double x, double v) { return f0(x, v, .01, 4.*M_PI); });
+	G.computeElectricField();
+//	G.save("out.csv");
+
+	SolverFD S(0.001, .3, G);
 	S.computeFD();
+	S.save("out.csv");
+
+
 
 	return 0;
 }
