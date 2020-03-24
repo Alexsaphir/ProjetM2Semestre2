@@ -13,7 +13,7 @@ MODULE PARAMETRE
     INTEGER :: Nx = 10, Ny = 10 ! Nombre de points ds la grille sur chaque direction
     CHARACTER(30) :: filename ! WARNING: Limite de caractère pour le nom du fichier de sortie
 
-    CHARACTER(*), PARAMETER :: fileconf = 'conf.nml' ! Nom du fichier de configuration
+    CHARACTER(*), PARAMETER :: fileconf = 'conf/conf.nml' ! Nom du fichier de configuration
     INTEGER, PRIVATE :: u
 
     ! PArametre pour l'analys de convergence de A

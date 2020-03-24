@@ -5,9 +5,9 @@ CONFIG -= qt
 
 SOURCES += src/main.cpp \
     src/gridfd.cpp \
-    src/solverdf.cpp
+    src/solverfd.cpp
 
 HEADERS += \
     src/gridfd.h \
     src/integrate.h \
-    src/solverdf.h
+    src/solverfd.h

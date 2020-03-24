@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "gridfd.h"
+#include "solverfd.h"
 
 double f0(double x, double v, double epsilon, double L)
 {
@@ -13,9 +14,10 @@ double f0(double x, double v, double epsilon, double L)
 int main()
 {
 	std::cout << "Hello, World!" << std::endl;
-	GridFD G(1, 1, 5, 5);
-	G.init_f( [](double x, double v){ return f0(x,v,.005, 1.);});
-	G.print();
+	GridFD G(1., 10., 5, 5);
+	G.init_f([](double x, double v) { return f0(x, v, .005, 1.); });
+	solverFD S(0.00001, 1., G);
+	S.computeFD();
 
 	return 0;
 }

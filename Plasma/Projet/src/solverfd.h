@@ -1,12 +1,24 @@
-#ifndef SOLVERDF_H
-#define SOLVERDF_H
+#ifndef SOLVERFD_H
+#define SOLVERFD_H
 
 #include "gridfd.h"
 
-class solverDF
+class solverFD
 {
 public:
-	solverDF(double dt, double T, double L, double Vmax, uint Nx, uint Nv);
+	solverFD(double dt, double T, double L, double Vmax, uint Nx, uint Nv);
+	solverFD(double dt, double T, GridFD &Grid);
+
+	// calcul flux
+	std::vector<double> Fi(uint i);
+	std::vector<double> Fj(uint j);
+
+	// Difference fini en deux étapes avec un splitting
+	void computefUnDemi();
+	void computeNextf();
+
+	// encapsulation on va de t=0 à T
+	void computeFD();
 
 private:
 	double m_dt{.00001};
@@ -16,4 +28,4 @@ private:
 	GridFD m_Grid;
 };
 
-#endif // SOLVERDF_H
+#endif // SOLVERFD_H

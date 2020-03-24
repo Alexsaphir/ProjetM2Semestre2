@@ -15,6 +15,8 @@ public:
 	[[nodiscard]] double getVmax() const;
 	[[nodiscard]] uint getNx() const;
 	[[nodiscard]] uint getNv() const;
+	[[nodiscard]] double getDv() const;
+	[[nodiscard]] double getDx() const;
 
 	//    Pour un i donné retourne la valeur de x dans l'intervalle [0,L]
 	[[nodiscard]] double getX(int i) const;
@@ -34,6 +36,7 @@ public:
 
 	void computeElectricCharge();
 	void computeElectricField();
+	[[nodiscard]] double maxElectricField();
 
 	void print() const;
 
