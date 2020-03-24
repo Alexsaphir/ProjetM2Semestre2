@@ -1,6 +1,7 @@
 #ifndef GRIDFD_H
 #define GRIDFD_H
 
+#include <ostream>
 #include <vector>
 
 typedef unsigned int uint;
@@ -34,12 +35,17 @@ public:
 	[[nodiscard]] double Rho(int p) const;
 	[[nodiscard]] double &Rho(int p);
 
-	void computeElectricCharge();
+
 	void computeElectricField();
 	[[nodiscard]] double maxElectricField();
 
-	void print() const;
+	double electricEnergy() const;
 
+	void print() const;
+	void save(const std::string &filename) const;
+
+private:
+	void computeElectricCharge();
 private:
 	double m_L{1.};
 	double m_Vmax{10.};
@@ -54,8 +60,10 @@ private:
 	std::vector<double> m_E;			  // Electric field
 	std::vector<double> m_rho;			  // Electric charge
 
-private:
-	// managed by the
+	friend std::ostream& operator<<(std::ostream& os, const GridFD& G);
 };
 
+std::ostream& operator<<(std::ostream& os, const GridFD& G);
+
 #endif // GRIDFD_H
+

@@ -1,5 +1,8 @@
 #include "gridfd.h"
 
+#include <algorithm>
+#include <cmath>
+#include <fstream>
 #include <iostream>
 #include <numeric>
 
@@ -9,18 +12,18 @@ GridFD::GridFD()
 	this->m_E.resize(m_Nx + 1, 0.);
 	this->m_rho.resize(m_Nx + 1, 0.);
 
-	dx = 1. / static_cast<double>(m_Nx);
-	dv = 1. / static_cast<double>(2. * m_Nv);
+	dx = m_L / static_cast<double>(m_Nx);
+	dv = 2. * m_Vmax / static_cast<double>(m_Nv);
 }
 
 GridFD::GridFD(double L, double Vmax, uint Nx, uint Nv) : m_L {L}, m_Vmax {Vmax}, m_Nx {Nx}, m_Nv {Nv}
 {
-	this->m_f.resize(m_Nx + 1, std::vector<double>(m_Nv + 1, 0.));
-	this->m_E.resize(m_Nx + 1, 0.);
-	this->m_rho.resize(m_Nx + 1, 0.);
+	this->m_f.resize(Nx + 1, std::vector<double>(Nv + 1, 0.));
+	this->m_E.resize(Nx + 1, 0.);
+	this->m_rho.resize(Nx + 1, 0.);
 
-	dx = 1. / static_cast<double>(m_Nx);
-	dv = 1. / static_cast<double>(2. * m_Nv);
+    dx = L / static_cast<double>(Nx);
+    dv = 2. * Vmax / static_cast<double>(Nv);
 }
 
 // Obtention des dimensions du domaine
@@ -58,12 +61,12 @@ double GridFD::getDx() const
 // Obtention
 double GridFD::getX(int i) const
 {
-	return static_cast<double>(i) * m_L * dx;
+	return static_cast<double>(i) * dx;
 }
 
 double GridFD::getV(int i) const
 {
-	return static_cast<double>(i) * m_Vmax * dv - m_Vmax;
+	return static_cast<double>(i) * dv - m_Vmax;
 }
 
 double GridFD::E(int p) const
@@ -100,7 +103,8 @@ double GridFD::maxElectricField()
 {
 	double max = m_E.at(0);
 
-	for (uint i = 1; i < m_Nx + 1; i++) {
+	for (uint i = 1; i < m_Nx + 1; i++)
+	{
 		if (m_E.at(i) > max)
 			max = m_E.at(i);
 	}
@@ -126,9 +130,12 @@ void GridFD::print() const
 
 void GridFD::init_f(double f0(double x, double v))
 {
-	for (uint i = 0; i < m_Nx + 1; ++i) {
+	for (uint i = 0; i < m_Nx + 1; ++i)
+	{
 		auto x = getX(i);
-		for (uint j = 0; j < m_Nv + 1; ++j) {
+
+		for (uint j = 0; j < m_Nv + 1; ++j)
+		{
 			auto v = getV(j);
 			m_f.at(i).at(j) = f0(x, v);
 		}
@@ -137,7 +144,8 @@ void GridFD::init_f(double f0(double x, double v))
 
 void GridFD::computeElectricCharge()
 {
-	for (uint i = 0; i < m_Nx + 1; ++i) {
+	for (uint i = 0; i < m_Nx + 1; ++i)
+	{
 		double sum	= std::accumulate(m_f.at(i).begin(), m_f.at(i).end(), 0.);
 		m_rho.at(i) = dv * sum;
 	}
@@ -145,8 +153,10 @@ void GridFD::computeElectricCharge()
 
 void GridFD::computeElectricField()
 {
+	computeElectricCharge();
 	m_E.at(0) = 0.;
-	for (uint i = 1; i < m_Nx + 1; ++i) {
+	for (uint i = 1; i < m_Nx + 1; ++i)
+	{
 		m_E.at(i) = m_E.at(i - 1) + dx * (1. - m_rho.at(i));
 	}
 	m_E.at(0) = m_E.at(m_Nx);
@@ -154,6 +164,34 @@ void GridFD::computeElectricField()
 	// Calcul la moyenne
 	double avg = std::accumulate(m_E.begin(), m_E.end(), 0.) / m_Nx;
 
-	for (uint i = 0; i < m_Nx; ++i)
+//    std::transform(std::begin(m_E),std::end(m_E),std::begin(m_E),[avg](int e){return e-avg;});
+
+    for (uint i = 0; i < m_Nx; ++i)
 		m_E.at(i) -= avg;
+}
+
+void GridFD::save(const std::string& filename) const
+{
+	std::ofstream out(filename, std::ofstream::out | std::ofstream::trunc);
+	out << *this;
+}
+
+std::ostream& operator<<(std::ostream& os, const GridFD& G)
+{
+	for (int i = 0; i < G.getNx(); ++i)
+	{
+		double x = G.getX(i);
+		for (int j = 0; j < G.getNv(); ++j)
+		{
+			double v = G.getV(j);
+			os << x << ',' << v << ',' << G.f(i, j) << ',' << G.E(i) << '\n';
+		}
+	}
+	return os;
+}
+
+double GridFD::electricEnergy() const
+{
+	// Encore une intégrale que l'on met sous une forme bizarre
+	return std::sqrt(.5* dx * std::inner_product(m_E.begin(),m_E.end(),m_E.begin(),0.));
 }
