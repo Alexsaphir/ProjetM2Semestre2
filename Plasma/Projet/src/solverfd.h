@@ -3,22 +3,24 @@
 
 #include "gridfd.h"
 
-class solverFD
+class SolverFD
 {
 public:
-	solverFD(double dt, double T, double L, double Vmax, uint Nx, uint Nv);
-	solverFD(double dt, double T, GridFD &Grid);
+	SolverFD(double dt, double T, double L, double Vmax, uint Nx, uint Nv);
+	SolverFD(double dt, double T, GridFD &Grid);
 
 	// calcul flux
 	std::vector<double> Fi(uint i);
 	std::vector<double> Fj(uint j);
 
 	// Difference fini en deux étapes avec un splitting
-	void computefUnDemi();
-	void computeNextf();
+	void computefUnDemi(double dt);
+	void computeNextf(double dt);
 
 	// encapsulation on va de t=0 à T
 	void computeFD();
+
+	void save(const std::string &filename) const;
 
 private:
 	double m_dt{.00001};
