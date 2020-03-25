@@ -171,10 +171,10 @@ void GridFD::save(const std::string& filename) const
 
 std::ostream& operator<<(std::ostream& os, const GridFD& G)
 {
-	for (int i = 0; i < G.getNx() + 1; ++i)
+	for (uint i = 0; i < G.getNx() + 1; ++i)
 	{
 		double x = G.getX(i);
-		for (int j = 0; j < G.getNv() + 1; ++j)
+		for (uint j = 0; j < G.getNv() + 1; ++j)
 		{
 			double v = G.getV(j);
 			os << x << ',' << v << ',' << G.f(i, j) << ',' << G.E(i) << '\n';
