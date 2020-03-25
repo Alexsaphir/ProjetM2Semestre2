@@ -99,7 +99,7 @@ double& GridFD::Rho(int p)
 	return m_rho.at(posMod(p , m_Nx));
 }
 
-double GridFD::maxElectricField()
+double GridFD::maxElectricField() const
 {
 	// Obtensu en regardant std::max(initialization_list)
 	// https://en.cppreference.com/w/cpp/algorithm/max
