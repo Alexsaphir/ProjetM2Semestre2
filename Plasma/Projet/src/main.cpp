@@ -15,13 +15,16 @@ double f0(double x, double v, double epsilon, double L)
 }
 int main()
 {
+	std::cout << std::floor(-8./3.);
+	return 0;
+
 	Grid G(4.*M_PI, 10., 100, 500);
 	G.init_f([](double x, double v) { return f0(x, v, .01, 4.*M_PI); });
 	G.computeElectricField();
 //	G.save("out.csv");
 
 	SolverFD S(0.1, 25, G);
-	S.computeFD();
+	S.solve();
 	S.save("out.csv");
 
 

@@ -7,8 +7,14 @@ class SolverFD
 {
 public:
 	SolverFD(double dt, double T, double L, double Vmax, uint Nx, uint Nv);
-	SolverFD(double dt, double T, Grid &Grid);
+	SolverFD(double dt, double T, Grid& Grid);
 
+	// encapsulation on va de t=0 à T
+	void solve();
+
+	void save(const std::string& filename) const;
+
+private:
 	// calcul flux
 	void computeFluxV(uint i);
 	void computeFluxX(uint j);
@@ -17,17 +23,12 @@ public:
 	void stepTranportV(double dt);
 	void stepTransportX(double dt);
 
-	// encapsulation on va de t=0 à T
-	void computeFD();
-
-	void save(const std::string &filename) const;
-
 private:
-	double m_dt{.00001};
-	double m_t{0.};
-	double m_T{1.};
+	double m_dt {.00001};
+	double m_t {0.};
+	double m_T {1.};
 
-	Grid m_Grid;
+	Grid				m_Grid;
 	std::vector<double> FluxX;
 	std::vector<double> FluxV;
 };

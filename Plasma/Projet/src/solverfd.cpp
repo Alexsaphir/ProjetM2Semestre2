@@ -1,8 +1,10 @@
 #include "solverfd.h"
-#include "grid.h"
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+
+#include "grid.h"
 
 SolverFD::SolverFD(double dt, double T, double L, double Vmax, uint Nx, uint Nv)
 	: m_dt(dt), m_t(0.), m_T(T), m_Grid(L, Vmax, Nx, Nv)
@@ -77,7 +79,7 @@ void SolverFD::stepTransportX(double dt)
 }
 
 // Avant d'appeler les différences finies on a juste besoin d'initialiser f
-void SolverFD::computeFD()
+void SolverFD::solve()
 {
 	std::ofstream out("ElectricEnergy.csv", std::ofstream::out | std::ofstream::trunc);
 	while (m_t < m_T)

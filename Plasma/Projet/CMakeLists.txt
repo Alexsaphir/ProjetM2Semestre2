@@ -5,4 +5,4 @@ project("Méthodes semi-Lagrangiennes pour la simulation numérique des plasmas"
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(Projet src/main.cpp src/grid.h src/grid.cpp src/integrate.h src/solverfd.cpp src/solverfd.h)
+add_executable(Projet src/main.cpp src/grid.h src/grid.cpp src/integrate.h src/solverfd.cpp src/solverfd.h src/solversl.cpp src/solversl.h)
