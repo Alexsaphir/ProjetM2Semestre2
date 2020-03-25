@@ -36,7 +36,7 @@ public:
 	[[nodiscard]] double& Rho(int p);
 
 	void				 computeElectricField();
-	[[nodiscard]] double maxElectricField();
+	[[nodiscard]] double maxElectricField() const;
 
 	double electricEnergy() const;
 

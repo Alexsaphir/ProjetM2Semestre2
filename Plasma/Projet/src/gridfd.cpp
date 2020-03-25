@@ -101,7 +101,7 @@ double& GridFD::Rho(int p)
 
 double GridFD::maxElectricField() const
 {
-	// Obtensu en regardant std::max(initialization_list)
+	// Obtenu en regardant std::max(initialization_list)
 	// https://en.cppreference.com/w/cpp/algorithm/max
 	return *std::max_element(std::begin(m_E), std::end(m_E));
 }
