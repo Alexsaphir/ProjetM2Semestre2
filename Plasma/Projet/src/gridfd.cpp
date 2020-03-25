@@ -141,7 +141,7 @@ void GridFD::computeElectricCharge()
 	for (uint i = 0; i < m_Nx; ++i)
 	{
 		// Integration
-		m_rho.at(i) = dv * std::reduce(m_f.at(i).begin(), m_f.at(i).end(), 0.);
+		m_rho.at(i) = dv * std::accumulate(m_f.at(i).begin(), m_f.at(i).end(), 0.);
 	}
 }
 
