@@ -1,5 +1,5 @@
 #include "solverfd.h"
-#include "gridfd.h"
+#include "grid.h"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -11,7 +11,7 @@ SolverFD::SolverFD(double dt, double T, double L, double Vmax, uint Nx, uint Nv)
 	FluxV = std::vector<double>(m_Grid.getNv(), 0.);
 }
 
-SolverFD::SolverFD(double dt, double T, GridFD& Grid) : m_dt(dt), m_t(0.), m_T(T), m_Grid(Grid)
+SolverFD::SolverFD(double dt, double T, Grid& Grid) : m_dt(dt), m_t(0.), m_T(T), m_Grid(Grid)
 {
 	FluxX = std::vector<double>(m_Grid.getNx(), 0.);
 	FluxV = std::vector<double>(m_Grid.getNv(), 0.);

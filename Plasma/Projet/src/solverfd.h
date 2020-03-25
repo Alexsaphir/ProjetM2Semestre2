@@ -1,13 +1,13 @@
 #ifndef SOLVERFD_H
 #define SOLVERFD_H
 
-#include "gridfd.h"
+#include "grid.h"
 
 class SolverFD
 {
 public:
 	SolverFD(double dt, double T, double L, double Vmax, uint Nx, uint Nv);
-	SolverFD(double dt, double T, GridFD &Grid);
+	SolverFD(double dt, double T, Grid &Grid);
 
 	// calcul flux
 	void computeFluxV(uint i);
@@ -27,7 +27,7 @@ private:
 	double m_t{0.};
 	double m_T{1.};
 
-	GridFD m_Grid;
+	Grid m_Grid;
 	std::vector<double> FluxX;
 	std::vector<double> FluxV;
 };

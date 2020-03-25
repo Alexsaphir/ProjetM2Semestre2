@@ -1,4 +1,4 @@
-#include "gridfd.h"
+#include "grid.h"
 
 #include <algorithm>
 #include <cmath>
@@ -6,7 +6,7 @@
 #include <iostream>
 #include <numeric>
 
-GridFD::GridFD()
+Grid::Grid()
 {
 	this->m_f.resize(m_Nx, std::vector<double>(m_Nv, 0.));
 	this->m_E.resize(m_Nx, 0.);
@@ -16,7 +16,7 @@ GridFD::GridFD()
 	dv = 2. * m_Vmax / static_cast<double>(m_Nv);
 }
 
-GridFD::GridFD(double L, double Vmax, uint Nx, uint Nv) : m_L {L}, m_Vmax {Vmax}, m_Nx {Nx}, m_Nv {Nv}
+Grid::Grid(double L, double Vmax, uint Nx, uint Nv) : m_L {L}, m_Vmax {Vmax}, m_Nx {Nx}, m_Nv {Nv}
 {
 	this->m_f.resize(Nx, std::vector<double>(Nv + 1, 0.));
 	this->m_E.resize(Nx, 0.);
@@ -27,86 +27,86 @@ GridFD::GridFD(double L, double Vmax, uint Nx, uint Nv) : m_L {L}, m_Vmax {Vmax}
 }
 
 // Obtention des dimensions du domaine
-double GridFD::getL() const
+double Grid::getL() const
 {
 	return m_L;
 }
 
-double GridFD::getVmax() const
+double Grid::getVmax() const
 {
 	return m_Vmax;
 }
 
 // Obtention des dimension du maillage
-uint GridFD::getNx() const
+uint Grid::getNx() const
 {
 	return m_Nx;
 }
 
-uint GridFD::getNv() const
+uint Grid::getNv() const
 {
 	return m_Nv;
 }
 
-double GridFD::getDv() const
+double Grid::getDv() const
 {
 	return dv;
 }
 
-double GridFD::getDx() const
+double Grid::getDx() const
 {
 	return dx;
 }
 
 // Obtention
-double GridFD::getX(int i) const
+double Grid::getX(int i) const
 {
 	return static_cast<double>(i) * dx;
 }
 
-double GridFD::getV(int i) const
+double Grid::getV(int i) const
 {
 	return static_cast<double>(i) * dv - m_Vmax;
 }
 
-double GridFD::E(int p) const
+double Grid::E(int p) const
 {
 	return m_E.at(posMod(p , m_Nx));
 }
 
-double& GridFD::E(int p)
+double& Grid::E(int p)
 {
 	return m_E.at(posMod(p , m_Nx));
 }
 
-double GridFD::f(int p, int v) const
+double Grid::f(int p, int v) const
 {
 	return m_f.at(posMod(p , m_Nx)).at(posMod(v , m_Nv));
 }
 
-double& GridFD::f(int p, int v)
+double& Grid::f(int p, int v)
 {
 	return m_f.at(posMod(p , m_Nx)).at(posMod(v , m_Nv));
 }
 
-double GridFD::Rho(int p) const
+double Grid::Rho(int p) const
 {
 	return m_rho.at(posMod(p , m_Nx));
 }
 
-double& GridFD::Rho(int p)
+double& Grid::Rho(int p)
 {
 	return m_rho.at(posMod(p , m_Nx));
 }
 
-double GridFD::maxElectricField() const
+double Grid::maxElectricField() const
 {
 	// Obtenu en regardant std::max(initialization_list)
 	// https://en.cppreference.com/w/cpp/algorithm/max
 	return *std::max_element(std::begin(m_E), std::end(m_E));
 }
 
-void GridFD::print() const
+void Grid::print() const
 {
 	std::cout << "-------";
 	for (uint i = 0; i < m_Nx + 1; ++i)
@@ -122,7 +122,7 @@ void GridFD::print() const
 	}
 }
 
-void GridFD::init_f(double f0(double x, double v))
+void Grid::init_f(double f0(double x, double v))
 {
 	for (uint i = 0; i < m_Nx; ++i)
 	{
@@ -136,7 +136,7 @@ void GridFD::init_f(double f0(double x, double v))
 	}
 }
 
-void GridFD::computeElectricCharge()
+void Grid::computeElectricCharge()
 {
 	for (uint i = 0; i < m_Nx; ++i)
 	{
@@ -145,7 +145,7 @@ void GridFD::computeElectricCharge()
 	}
 }
 
-void GridFD::computeElectricField()
+void Grid::computeElectricField()
 {
 	computeElectricCharge();
 	m_E.at(0) = 0.;
@@ -163,13 +163,13 @@ void GridFD::computeElectricField()
 		m_E.at(i) -= avg;
 }
 
-void GridFD::save(const std::string& filename) const
+void Grid::save(const std::string& filename) const
 {
 	std::ofstream out(filename, std::ofstream::out | std::ofstream::trunc);
 	out << *this;
 }
 
-std::ostream& operator<<(std::ostream& os, const GridFD& G)
+std::ostream& operator<<(std::ostream& os, const Grid& G)
 {
 	for (uint i = 0; i < G.getNx() + 1; ++i)
 	{
@@ -183,7 +183,7 @@ std::ostream& operator<<(std::ostream& os, const GridFD& G)
 	return os;
 }
 
-double GridFD::electricEnergy() const
+double Grid::electricEnergy() const
 {
 	// Encore une intégrale que l'on met sous une forme bizarre
 	return std::sqrt(.5 * dx * std::inner_product(m_E.begin(), m_E.end(), m_E.begin(), 0.));

@@ -6,11 +6,11 @@
 
 typedef unsigned int uint;
 
-class GridFD
+class Grid
 {
 public:
-	GridFD();
-	GridFD(double L, double Vmax, uint Nx, uint Nv);
+	Grid();
+	Grid(double L, double Vmax, uint Nx, uint Nv);
 
 	[[nodiscard]] double getL() const;
 	[[nodiscard]] double getVmax() const;
@@ -66,9 +66,9 @@ private:
 	std::vector<double>				 m_E;	// Electric field
 	std::vector<double>				 m_rho; // Electric charge
 
-	friend std::ostream& operator<<(std::ostream& os, const GridFD& G);
+	friend std::ostream& operator<<(std::ostream& os, const Grid& G);
 };
 
-std::ostream& operator<<(std::ostream& os, const GridFD& G);
+std::ostream& operator<<(std::ostream& os, const Grid& G);
 
 #endif // GRIDFD_H
