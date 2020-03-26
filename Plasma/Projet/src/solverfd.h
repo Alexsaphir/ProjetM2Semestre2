@@ -7,7 +7,7 @@ class SolverFD
 {
 public:
 	SolverFD(double dt, double T, double L, double Vmax, uint Nx, uint Nv);
-	SolverFD(double dt, double T, Grid& Grid);
+	SolverFD(double dt, double T, const Grid& Grid);
 
 	// encapsulation on va de t=0 à T
 	void solve();
