@@ -37,7 +37,7 @@ void SolverFD::computeFluxX(uint j)
 	}
 }
 
-void SolverFD::stepTranportV(double dt)
+void SolverFD::stepTransportV(double dt)
 {
 	double dv = m_Grid.getDv();
 	double Nv = m_Grid.getNv();
@@ -92,9 +92,10 @@ void SolverFD::solve()
 		out << m_t << ',' << m_Grid.electricEnergy() << '\n';
 		dt = std::min({m_Grid.getDv() / m_Grid.maxElectricField(), m_Grid.getDx() / m_Grid.getVmax(), m_dt});
 
-		stepTranportV(dt);
+		stepTransportV(dt);
 		stepTransportX(dt);
 		m_t += dt;
+		if (!m_Grid.getSym())
 		std::cout << "Le temps écoulé : " << m_t << std::endl;
 	}
 }

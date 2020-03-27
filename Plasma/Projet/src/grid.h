@@ -12,6 +12,7 @@ class Grid
 public:
 	Grid();
 	Grid(double L, double Vmax, uint Nx, uint Nv);
+	Grid(double L, double Vmax, uint Nx, uint Nv, bool sym);
 
 	[[nodiscard]] double getL() const;
 	[[nodiscard]] double getVmax() const;
@@ -43,6 +44,7 @@ public:
 
 	void print() const;
 	void save(const std::string& filename) const;
+	double diffMax(const Grid &G) const;
 
 private:
 	void				computeElectricCharge();
@@ -60,6 +62,11 @@ private:
 	uint m_Nx {10};
 	uint m_Nv {10};
 
+	bool m_sym{false};
+
+public:
+	bool getSym() const;
+private:
 	double dx {.1};
 	double dv {2.};
 

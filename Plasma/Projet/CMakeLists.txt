@@ -5,6 +5,8 @@ project("Méthodes semi-Lagrangiennes pour la simulation numérique des plasmas"
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_CXX_FLAGS "-O3")
+
 if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 	include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 	conan_basic_setup()
