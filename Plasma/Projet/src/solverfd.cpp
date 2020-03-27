@@ -21,6 +21,7 @@ SolverFD::SolverFD(double dt, double T, const Grid& Grid) : m_dt(dt), m_t(0.), m
 
 void SolverFD::computeFluxV(uint i)
 {
+#pragma omp parallel for default(shared)
 	for (uint j = 0; j < m_Grid.getNv(); j++)
 	{
 		FluxV.at(j) = (m_Grid.f(i, j + 1) - m_Grid.f(i, j));
@@ -29,6 +30,7 @@ void SolverFD::computeFluxV(uint i)
 
 void SolverFD::computeFluxX(uint j)
 {
+#pragma omp parallel for default(shared)
 	for (uint i = 0; i < m_Grid.getNx(); i++)
 	{
 		FluxX.at(i) = (m_Grid.f(i + 1, j) - m_Grid.f(i, j));
@@ -43,6 +45,7 @@ void SolverFD::stepTranportV(double dt)
 	for (uint i = 0; i < m_Grid.getNx(); i++)
 	{
 		computeFluxV(i);
+
 		for (uint j = 1; j < Nv; j++)
 		{
 			m_Grid.f(i, j) += (dt / dv)
@@ -63,7 +66,8 @@ void SolverFD::stepTransportX(double dt)
 	for (uint j = 0; j < m_Grid.getNv(); j++)
 	{
 		computeFluxX(j);
-		for (uint i = 1; i < Nx; i++)
+
+		for (uint i = 1; i < Nx; ++i)
 		{
 			m_Grid.f(i, j) -= (dt / dx)
 							  * (std::max(0., m_Grid.getV(j)) * FluxX.at(i - 1)
@@ -84,7 +88,6 @@ void SolverFD::solve()
 	while (m_t < m_T)
 	{
 		double dt;
-		//		m_Grid.print();
 		m_Grid.computeElectricField();
 		out << m_t << ',' << m_Grid.electricEnergy() << '\n';
 		dt = std::min({m_Grid.getDv() / m_Grid.maxElectricField(), m_Grid.getDx() / m_Grid.getVmax(), m_dt});
@@ -94,8 +97,6 @@ void SolverFD::solve()
 		m_t += dt;
 		std::cout << "Le temps écoulé : " << m_t << std::endl;
 	}
-
-	//	m_Grid.print();
 }
 void SolverFD::save(const std::string& filename) const
 {

@@ -8,7 +8,7 @@ class SolverSL
 {
 public:
 	SolverSL(double dt, double T, double L, double Vmax, uint Nx, uint Nv);
-	SolverSL(double dt, double T, const Grid& Grid);
+	SolverSL(double dt, double T, Grid  Grid);
 
 	void solve();
 

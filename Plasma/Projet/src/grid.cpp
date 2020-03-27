@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <complex.h>
 #include <fstream>
 #include <iostream>
 #include <numeric>
@@ -9,8 +10,9 @@
 Grid::Grid()
 {
 	this->m_f.resize(m_Nx, std::vector<double>(m_Nv, 0.));
-	this->m_E.resize(m_Nx, 0.);
-	this->m_rho.resize(m_Nx, 0.);
+	this->m_E.resize(m_Nx + 1, 0.);
+	this->m_rho.resize(m_Nx + 1, 0.);
+	this->m_out.resize(m_Nx + 1);
 
 	dx = m_L / static_cast<double>(m_Nx);
 	dv = 2. * m_Vmax / static_cast<double>(m_Nv);
@@ -19,8 +21,9 @@ Grid::Grid()
 Grid::Grid(double L, double Vmax, uint Nx, uint Nv) : m_L {L}, m_Vmax {Vmax}, m_Nx {Nx}, m_Nv {Nv}
 {
 	this->m_f.resize(Nx, std::vector<double>(Nv + 1, 0.));
-	this->m_E.resize(Nx, 0.);
-	this->m_rho.resize(Nx, 0.);
+	this->m_E.resize(Nx + 1, 0.);
+	this->m_rho.resize(Nx + 1, 0.);
+	this->m_out.resize(Nx + 1);
 
 	dx = L / static_cast<double>(Nx);
 	dv = 2. * Vmax / static_cast<double>(Nv);
@@ -71,32 +74,32 @@ double Grid::getV(int i) const
 
 double Grid::E(int p) const
 {
-	return m_E.at(posMod(p , m_Nx));
+	return m_E.at(posMod(p, m_Nx));
 }
 
 double& Grid::E(int p)
 {
-	return m_E.at(posMod(p , m_Nx));
+	return m_E.at(posMod(p, m_Nx));
 }
 
 double Grid::f(int p, int v) const
 {
-	return m_f.at(posMod(p , m_Nx)).at(posMod(v , m_Nv));
+	return m_f.at(posMod(p, m_Nx)).at(posMod(v, m_Nv));
 }
 
 double& Grid::f(int p, int v)
 {
-	return m_f.at(posMod(p , m_Nx)).at(posMod(v , m_Nv));
+	return m_f.at(posMod(p, m_Nx)).at(posMod(v, m_Nv));
 }
 
 double Grid::Rho(int p) const
 {
-	return m_rho.at(posMod(p , m_Nx));
+	return m_rho.at(posMod(p, m_Nx));
 }
 
 double& Grid::Rho(int p)
 {
-	return m_rho.at(posMod(p , m_Nx));
+	return m_rho.at(posMod(p, m_Nx));
 }
 
 double Grid::maxElectricField() const
@@ -122,7 +125,7 @@ void Grid::print() const
 	}
 }
 
-void Grid::init_f(double f0(double x, double v))
+void Grid::init_f(double f0(double , double ))
 {
 	for (uint i = 0; i < m_Nx; ++i)
 	{
@@ -143,10 +146,12 @@ void Grid::computeElectricCharge()
 		// Integration
 		m_rho.at(i) = dv * std::accumulate(m_f.at(i).begin(), m_f.at(i).end(), 0.);
 	}
+	m_rho.at(m_Nx) = m_rho.at(0);
 }
 
 void Grid::computeElectricField()
 {
+	// Commun
 	computeElectricCharge();
 	m_E.at(0) = 0.;
 	for (uint i = 1; i < m_Nx; ++i)

@@ -3,6 +3,7 @@
 
 #include <ostream>
 #include <vector>
+#include <complex>
 
 typedef unsigned int uint;
 
@@ -24,7 +25,7 @@ public:
 	// idem pour [-Vmax,Vmax]
 	[[nodiscard]] double getV(int i) const;
 
-	void init_f(double f0(double x, double v));
+	void init_f(double f0(double , double ));
 
 	[[nodiscard]] double  E(int p) const;
 	[[nodiscard]] double& E(int p);
@@ -65,6 +66,7 @@ private:
 	std::vector<std::vector<double>> m_f;	// distribution of the plasma
 	std::vector<double>				 m_E;	// Electric field
 	std::vector<double>				 m_rho; // Electric charge
+	std::vector<std::complex<double>> m_out;
 
 	friend std::ostream& operator<<(std::ostream& os, const Grid& G);
 };
