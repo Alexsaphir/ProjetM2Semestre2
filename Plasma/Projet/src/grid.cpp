@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <complex.h>
+#include <fftw3.h>
 #include <fstream>
 #include <iostream>
 #include <numeric>
@@ -153,6 +154,35 @@ void Grid::computeElectricField()
 {
 	// Commun
 	computeElectricCharge();
+
+	// USE Fourrier
+	int		  N = m_Nx + 1;
+	fftw_plan toFourrier, fromFourrier;
+	toFourrier	 = fftw_plan_dft_r2c_1d(N, m_rho.data(), reinterpret_cast<fftw_complex*>(m_out.data()),
+										FFTW_ESTIMATE);
+	fromFourrier = fftw_plan_dft_c2r_1d(N, reinterpret_cast<fftw_complex*>(m_out.data()), m_E.data(),
+										FFTW_ESTIMATE);
+
+	fftw_execute(toFourrier);
+	// on a alors les coeff de rho ds fourrier
+	for (int k = -N / 2; k < N / 2; ++k)
+	{
+		if (k == 0)
+		{
+			m_out.at(k + N / 2) *= 0.;
+			continue;
+		}
+		std::complex<double> tmp = -I * m_L / (2. * M_PI * k);
+		m_out.at(k + N / 2) *= tmp;
+	}
+	m_out.at(0) = 0.;
+	fftw_execute(fromFourrier);
+	return;
+
+
+	// Pas fourrier
+
+
 	m_E.at(0) = 0.;
 	for (uint i = 1; i < m_Nx; ++i)
 	{
