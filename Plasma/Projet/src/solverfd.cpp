@@ -95,7 +95,7 @@ void SolverFD::solve()
 		stepTransportV(dt);
 		stepTransportX(dt);
 		m_t += dt;
-		if (!m_Grid.getSym())
+//		if (!m_Grid.getSym())
 		std::cout << "Le temps écoulé : " << m_t << std::endl;
 	}
 }

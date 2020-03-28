@@ -4,6 +4,8 @@
 #include <ostream>
 #include <vector>
 #include <complex>
+#include <fftw3.h>
+
 
 typedef unsigned int uint;
 
@@ -11,8 +13,8 @@ class Grid
 {
 public:
 	Grid();
-	Grid(double L, double Vmax, uint Nx, uint Nv);
-	Grid(double L, double Vmax, uint Nx, uint Nv, bool sym);
+	Grid(double L, double Vmax, int Nx, int Nv);
+	Grid(double L, double Vmax, int Nx, int Nv, bool sym);
 
 	[[nodiscard]] double getL() const;
 	[[nodiscard]] double getVmax() const;
@@ -48,7 +50,7 @@ public:
 
 private:
 	void				computeElectricCharge();
-	static unsigned int posMod(int a, unsigned int b)
+	static unsigned int posMod(int a, int b)
 	{
 		// clang / gcc -O3 ne duplique pas les a%b
 		// checked on the one and only https://godbolt.org/
@@ -59,10 +61,12 @@ private:
 	double m_L {1.};
 	double m_Vmax {10.};
 
-	uint m_Nx {10};
-	uint m_Nv {10};
+	int m_Nx {10};
+	int m_Nv {10};
 
 	bool m_sym{false};
+
+	fftw_plan toFourrier, fromFourrier;
 
 public:
 	bool getSym() const;

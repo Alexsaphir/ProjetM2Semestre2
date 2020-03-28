@@ -60,19 +60,19 @@ void studyConv()
 	}
 }
 
+
 int main()
 {
+	Grid G(4. * M_PI, 10., 1000, 1000);
+	G.init_f([](double x, double v) { return f0(x, v, 0.01, 4. * M_PI); });
 
-	Grid G(4. * M_PI, 10., 5000, 5000);
-	G.init_f([](double x, double v) { return f0(x, v, 0, 4. * M_PI); });
+	/* Fonction carré pour tester le transport */
+//	 G.init_f([](double x, double v) {
+//		if (std::abs(x-2.) < 1. && std::abs(v-2.) < 1.)
+//			return 1./4.;
+//		return 0.;
+//	});
 
-	/*
-	 G.init_f([](double x, double v) {
-		if (std::abs(x-2.) < 1. && std::abs(v-2.) < 1.)
-			return 1./4.;
-		return 0.;
-	});
-	 */
 
 	//	SolverFD S(0.01, 25., G);
 	SolverSL SL(0.1, 10., G);

@@ -76,7 +76,7 @@ void SolverSL::solve()
 		stepTransportV(.5 * m_dt);
 
 		m_t += m_dt;
-		if (!m_Grid.getSym())
+		//if (!m_Grid.getSym())
 			std::cout << "Le temps écoulé : " << m_t << std::endl;
 	}
 }
