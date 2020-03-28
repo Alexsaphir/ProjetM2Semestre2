@@ -17,23 +17,21 @@ Grid::Grid()
 	dx = m_L / static_cast<double>(m_Nx);
 	dv = 2. * m_Vmax / static_cast<double>(m_Nv);
 
-	toFourrier	 = fftw_plan_dft_r2c_1d(m_Nx+1, m_rho.data(), reinterpret_cast<fftw_complex*>(m_out.data()),
-										  FFTW_ESTIMATE);
-	fromFourrier = fftw_plan_dft_c2r_1d(m_Nx+1, reinterpret_cast<fftw_complex*>(m_out.data()), m_E.data(),
+	toFourrier	 = fftw_plan_dft_r2c_1d(m_Nx + 1, m_rho.data(), reinterpret_cast<fftw_complex*>(m_out.data()),
+										FFTW_ESTIMATE);
+	fromFourrier = fftw_plan_dft_c2r_1d(m_Nx + 1, reinterpret_cast<fftw_complex*>(m_out.data()), m_E.data(),
 										FFTW_ESTIMATE);
 }
 
 Grid::Grid(double L, double Vmax, int Nx, int Nv) : m_L {L}, m_Vmax {Vmax}, m_Nx {Nx}, m_Nv {Nv}
 {
-	this->m_f.resize(Nx, std::vector<double>(Nv , 0.));
+	this->m_f.resize(Nx, std::vector<double>(Nv, 0.));
 	this->m_E.resize(Nx + 1, 0.);
 	this->m_rho.resize(Nx + 1, 0.);
 	this->m_out.resize(Nx + 1);
 
 	dx = L / static_cast<double>(Nx);
 	dv = 2. * Vmax / static_cast<double>(Nv);
-
-
 }
 
 Grid::Grid(double L, double Vmax, int Nx, int Nv, bool sym)
@@ -170,35 +168,24 @@ void Grid::computeElectricCharge()
 		// Integration
 		m_rho.at(i) = dv * std::accumulate(m_f.at(i).begin(), m_f.at(i).end(), 0.);
 	}
-	//Pour fourier
+	// Pour fourier
 	m_rho.at(m_Nx) = m_rho.at(0);
 }
 
 void Grid::computeElectricField()
 {
-	if (m_sym)
-	{
-		// On est dans le cas test
-#pragma omp parallel for
-		for (int i = 0; i < m_Nx; ++i)
-		{
-			m_E.at(i) = getX(i);
-		}
-		return;
-	}
-
 	// Commun
 	computeElectricCharge();
 
-	//Commenter fourier jusqu'au return pour utiliser différence finie
+	// Commenter fourier jusqu'au return pour utiliser différence finie
 
 	// USE Fourrier
-	int		  N = m_Nx+1;
+	int N = m_Nx + 1;
 
-	for(int i=0; i<N;++i)
-		m_rho.at(i)=1.-m_rho.at(i);
+	for (int i = 0; i < N; ++i)
+		m_rho.at(i) = 1. - m_rho.at(i);
 	toFourrier	 = fftw_plan_dft_r2c_1d(N, m_rho.data(), reinterpret_cast<fftw_complex*>(m_out.data()),
-										  FFTW_ESTIMATE);
+										FFTW_ESTIMATE);
 	fromFourrier = fftw_plan_dft_c2r_1d(N, reinterpret_cast<fftw_complex*>(m_out.data()), m_E.data(),
 										FFTW_ESTIMATE);
 
@@ -214,11 +201,11 @@ void Grid::computeElectricField()
 	m_out.at(N / 2) *= 0.;
 
 #pragma omp parallel for
-	for (int k = N/2+1; k < N; ++k)
+	for (int k = N / 2 + 1; k < N; ++k)
 	{
-		int f= k-N;
+		int					 f	 = k - N;
 		std::complex<double> tmp = {0, -m_L / (2. * M_PI * f)};
-		m_out.at(k)		 = tmp * m_out.at(k);
+		m_out.at(k)				 = tmp * m_out.at(k);
 	}
 
 	m_out.at(0) = 0.; // k==0
@@ -226,7 +213,7 @@ void Grid::computeElectricField()
 
 	// Valeur temporaire éffacé
 	m_E.at(m_Nx) = 0.;
-	//Normalisation
+	// Normalisation
 #pragma omp parallel for
 	for (int i = 0; i < N; ++i)
 		m_E.at(i) = m_E.at(i) / N;
@@ -257,13 +244,15 @@ void Grid::save(const std::string& filename) const
 
 std::ostream& operator<<(std::ostream& os, const Grid& G)
 {
-	for (uint i = 0; i < G.getNx() + 1; i+=10)
+	for (uint i = 0; i < G.getNx() + 1; i += 10)
 	{
 		double x = G.getX(i);
-		for (uint j = 0; j < G.getNv() + 1; j+=10)
+		for (uint j = 0; j < G.getNv() + 1; j += 10)
 		{
 			double v = G.getV(j);
-			os << x << ',' << v << ',' << G.f(i, j) << ',' << G.E(i)<< ',' << G.Rho(i)  << '\n';
+			if (G.m_sym)
+				os << x << ',' << v << ',' << G.f(i, j) << ',' << G.getX(i) << ',' << G.getV(j) << '\n';
+			os << x << ',' << v << ',' << G.f(i, j) << ',' << G.E(i) << ',' << G.Rho(i) << '\n';
 		}
 	}
 	return os;

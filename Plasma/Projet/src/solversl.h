@@ -13,6 +13,7 @@ public:
 	void solve();
 
 	void save(const std::string& filename) const;
+	double diffMax(const Grid &G) const;
 
 private:
 	void stepTransportV(double dt);
