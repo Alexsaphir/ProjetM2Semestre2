@@ -21,7 +21,7 @@ void SolverKeen::stepTransportV(double dt)
 {
 	for (int i = 0; i < m_Grid.getNx(); ++i)
 	{
-		double e = m_Grid.E(i) + Eapp(m_t,m_Grid.getX(i));
+		double e = m_Grid.E(i) + Eapp(m_t, m_Grid.getX(i));
 
 // On calcule les valeurs des débuts des caractéristiques
 #pragma omp parallel for
@@ -69,12 +69,13 @@ void SolverKeen::solve()
 
 		// Split step
 
-		stepTransportV(.5*m_dt);
+		stepTransportV(.5 * m_dt);
 		stepTransportX(m_dt);
+		m_Grid.computeElectricField();
 		stepTransportV(.5 * m_dt);
 
 		m_t += m_dt;
-			std::cout << "Le temps écoulé : " << m_t << std::endl;
+		std::cout << "Le temps écoulé : " << m_t << std::endl;
 	}
 }
 
@@ -95,13 +96,13 @@ double SolverKeen::diffMax(const Grid& G) const
 }
 double SolverKeen::alpha(double t) const
 {
-	double epsilon = .5*(std::tanh((t0-tL)/tw) - std::tanh((t0-tR)/tw));
-	double epst= .5*(std::tanh((t-tL)/tw) - std::tanh((t-tR)/tw));
-	return (epst - epsilon) / (1.-epsilon);
+	double epsilon = .5 * (std::tanh((t0 - tL) / tw) - std::tanh((t0 - tR) / tw));
+	double epst	   = .5 * (std::tanh((t - tL) / tw) - std::tanh((t - tR) / tw));
+	return (epst - epsilon) / (1. - epsilon);
 }
 double SolverKeen::Eapp(double t, double x)
 {
-	return Emax*k*alpha(t)*std::sin(k*x - w*t);
+	return Emax * k * alpha(t) * std::sin(k * x - w * t);
 }
 void SolverKeen::savediff(const Grid& G, const std::string& filename) const
 {
@@ -112,7 +113,8 @@ void SolverKeen::savediff(const Grid& G, const std::string& filename) const
 		for (uint j = 0; j < G.getNv() + 1; j += 10)
 		{
 			double v = G.getV(j);
-			os << x << ',' << v << ',' << m_Grid.f(i, j) - G.f(i, j) << ',' << G.E(i) << ',' << G.Rho(i) << '\n';
+			os << x << ',' << v << ',' << m_Grid.f(i, j) - G.f(i, j) << ',' << m_Grid.f(i, j) << ',' << G.E(i)
+			   << ',' << G.Rho(i) << '\n';
 		}
 	}
 }

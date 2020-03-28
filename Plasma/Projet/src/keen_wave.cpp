@@ -20,16 +20,15 @@ int main()
 {
 
 
-	Grid G(2.*M_PI/.26, 6., 512-1, 4096);
+	Grid G(2.*M_PI/.26, 6., 512-1, 512);
 
 	// Initialise les 2 grilles
 	// Obligé de recopier a la main T dans le lambda
 	//Besoin d'implementer un constructeur prenant un functionnal
 	G.init_f([](double x, double v) { return f0(x, v, 2.*M_PI/.26); });
-	double T = 400.;
-	SolverKeen SL(0.05, T, G);
+	double T = 500.;
+	SolverKeen SL(0.1, T, G);
 	SL.solve();
-
 	SL.savediff(G, "keenwave.csv");
 
 	return 0;
