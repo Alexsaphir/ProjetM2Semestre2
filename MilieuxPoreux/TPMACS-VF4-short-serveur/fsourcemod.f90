@@ -42,7 +42,7 @@ Contains
         case(2)
             gbord = x + y
         case(3)
-            gbord = x * x + y * y
+            gbord = x * x - y * y
         case(4)
             gbord = COS(5. * pi * (x + y))
         case(5)
@@ -99,13 +99,13 @@ Contains
         case (2)
             fsource = theta * (x + y)
         case (3)
-            fsource =
+            fsource = (x * x - y * y) * theta
         case(4)
-            fsource =
+            fsource = (50. * pi * pi * Coef_diffusion + theta) * COS(5. * pi*(y + x))
         case(5)
-            fsource =
+            fsource = (1. - x) * x * (1. - y) * y * theta - Coef_diffusion * (-2. * (1. - y) * y - 2. * (1. - x) * x)
         case(6)
-            fsource =
+            fsource = SIN(pi*x)*SIN(pi*y)*theta+2.*pi*pi*Coef_diffusion*SIN(pi*x)*SIN(pi*y)
         end Select
         !----------------
         ! Fin du programme

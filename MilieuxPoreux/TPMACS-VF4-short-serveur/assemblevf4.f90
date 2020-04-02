@@ -57,14 +57,12 @@ SUBROUTINE ASSEMBLEVF4(A)
             ik = NumTVoisSeg(1, iseg); jL = NumTVoisSeg(2, iseg)
 
             !! contribution dans la ligne ik
-            CALL Ajout (ik, ik, Coef_diffusion * TauKL(iseg), A)
-
-            CALL Ajout (?????????)
+            CALL Ajout (ik, ik, Coef_diffusion*TauKL(iseg),  A )
+            CALL Ajout (ik, jL, -Coef_diffusion*TauKL(iseg), A )
 
             !! contribution dans la ligne jL
-
-            CALL Ajout (?????)
-            CALL Ajout (jL, ik, -Coef_diffusion * TauKL(iseg), A)
+            CALL Ajout (jL,jL, Coef_diffusion*TauKL(iseg),  A  )
+            CALL Ajout (jL, ik, -Coef_diffusion*TauKL(iseg), A )
 
         case(dirichlet)
 

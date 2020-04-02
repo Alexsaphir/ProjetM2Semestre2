@@ -20,8 +20,8 @@ PROGRAM laplacienVFmacs
     USE imprime
     USE intmatvec
     USE algebrelineaire
-    use plotvtkmod
-    Use fsourcemod
+    USE plotvtkmod
+    USE fsourcemod
     IMPLICIT NONE
     !==========================
     ! Declaration des tableaux
@@ -31,7 +31,7 @@ PROGRAM laplacienVFmacs
     ! Declaration des variables locales
     !==================================
     INTEGER :: jt, i, j, is, jv, kiter
-    REAL(kind = long), DIMENSION(:), ALLOCATABLE :: U, Uexacte
+    REAL(kind = long), DIMENSION(:), ALLOCATABLE :: U, Uexacte,ErreurL2
     REAL(kind = long), DIMENSION(:), ALLOCATABLE :: VitesseX, VitesseY
     REAL(kind = long) :: tol, seuil
 
@@ -42,6 +42,7 @@ PROGRAM laplacienVFmacs
     !
     CALL init                    !* Initialisation
     print*, 'init ok '
+
 
     ! Lecture du maillage ? partir d'un fichier : MAILLAGEGEOx, x=1...6
 
@@ -59,7 +60,7 @@ PROGRAM laplacienVFmacs
     !-----------------------------------------
     A%F = 0.D0
     do i = 1, Nbt
-        A%F (i) = fsource(???, ???, choixpb)
+        A%F (i) = fsource(CoordK(1,i), CoordK(2,i), choixpb)
     enddo
 
     write(*, *)'scmem  ok'
@@ -68,8 +69,9 @@ PROGRAM laplacienVFmacs
     ! Assemblage second membre du systeme linaire : A%Bg:= int_K A%F
     !----------------------------------------------------------------
     !
-    A%Bg = A%F * AireK
-
+    DO I=1,Nbt
+        A%Bg(i)= A%F(i)*AireK(i)
+    END DO
     print*, 'rhs ok '
 
 
@@ -99,6 +101,12 @@ PROGRAM laplacienVFmacs
     !! ----------------------------
     !!  solution Comparaison
     !! ----------------------------
+    ALLOCATE(ErreurL2(Nbt))
+    DO i = 1, Nbt
+        ErreurL2(i) = (Uexacte(i)-U(i))*(Uexacte(i)-U(i))
+    END DO
+
+
 
     WRITE(uprint, *)' U(x,y) , Uexact '
 
@@ -118,6 +126,8 @@ PROGRAM laplacienVFmacs
     WRITE(*, *)' Min solution exacte : ', MINVAL(Uexacte)
     WRITE(*, *)' Min solution calculee : ', MINVAL(U)
 
+    PRINT*, "Erreur L2 : ", SUM(ErreurL2)
+
 
 
     ! Creation du fichier pour visit
@@ -125,6 +135,7 @@ PROGRAM laplacienVFmacs
 
     CALL plot_vtk (U, 'Ucalcule', 'U')
     CALL plot_vtk (Uexacte, 'Uexacte', 'Uexacte')
+    CALL plot_vtk (ABS(Uexacte - U), 'Erreur', 'Erreur')
     !!
     !
 

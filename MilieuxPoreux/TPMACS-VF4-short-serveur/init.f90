@@ -50,7 +50,7 @@ SUBROUTINE  INIT
 
     ! il y a six maillages dispo 'MAILLAGEGEOx', x=1,...,6
 
-    nom_mesh = 'MAILLAGEGEO3'
+
 
     !--------------------------------------------------------------------
 
@@ -58,7 +58,7 @@ SUBROUTINE  INIT
 
     Coef_diffusion = 1.D0
 
-    theta = 0.D0
+    theta = 1.D0
 
     !--------------------------------------------
     ! Choix du probleme à resoudre (ChoixPb)
@@ -72,7 +72,8 @@ SUBROUTINE  INIT
     !
     ! La fonction gbord contient la solution exacte
 
-    ChoixPb = 1
+    nom_mesh = 'MAILLAGEGEO6'
+    ChoixPb = 6
 
 
 
