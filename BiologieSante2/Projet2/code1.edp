@@ -1,0 +1,99 @@
+//Ce code résout le problème de Cauchy pour l’équation biharmonique
+
+//Condition de bord
+func fu0 = x*sin(x)*cosh(y)/2.  - x*cos(x)*sinh(y)/2.;
+func fdu0 = 0.;
+func fw0 = cos(x)*cosh(y) + sin(x)*sinh(y);
+func fdw0 = 1;
+
+func guessu1 = x+y;
+func guessw1 = x+y;
+
+int  res = 5;
+int K=10;
+
+real epsilon = 0.01;
+
+// Définition des bords du problème: a,b,c,d
+border a(t=0, 1){x=t;y=0;label=1;} // Gamma 0
+border b(t=0, 1){x=1;y=t;label=2;} // Gamma 1
+border c(t=0, 1){x=1-t;y=1;label=1;} // Gamma 1
+border d(t=0, 1){x=0;y=1-t;label=1;} // Gamma 1
+
+// Définition du domaine étudié: Sh
+mesh Th=buildmesh(a(res) + b(res) + c(res) + d(res)); // generation mesh
+
+// Affichage du domaine utilisé
+plot(Th);
+
+// Définition de l'espace de fonction base: Vh
+fespace Vh(Th,P2);
+
+// Liste de fonction dans Vh: u,v,...
+Vh Vfu0 = fu0;
+Vh Vfdu0 = fdu0;
+Vh Vfw0 = fw0;
+Vh Vfdw0 = fdw0;
+Vh Vguessu1 = guessu1;
+Vh Vguessw1 = guessw1;
+
+
+Vh u0, w0, v;
+Vh u,w;
+Vh vk, hk, uk, wk;
+Vh uold;
+
+problem init1(w0,v) = -int2d(Th)(dx(w0)*dx(v) + dy(w0)*dy(v))
+		+ on(2, w0 = Vguessw1)
+		+ int1d(Th, 1)(Vfdw0*v);
+
+problem init2(u0,v) = -int2d(Th)(dx(u0)*dx(v) + dy(u0)*dy(v))
+		- int2d(Th)(w0*v)
+		+ on(2, u0=Vguessu1)
+		+ int1d(Th, 1)(Vfdu0*v);
+
+
+
+problem pair1(w,v) = -int2d(Th)(dx(w)*dx(v) + dy(w)*dy(v))
+		+on(1,w=Vfw0)
+		+ int1d(Th,2)((dx(vk)*N.x + dy(vk)*N.y) * v);
+problem pair2(u,v) = -int2d(Th)(dx(u)*dx(v) + dy(u)*dy(v))
+		+on(1,u=Vfu0)
+		+ int1d(Th, 2)((dx(hk)*N.x + dy(hk)*N.y) * v);
+
+
+
+problem impair1(w,v) = -int2d(Th)(dx(w)*dx(v) + dy(w)*dy(v))
+		+ on(2, w = wk)
+		+ int1d(Th, 1)(Vfdw0*v);
+
+problem impair2(u,v) = -int2d(Th)(dx(u)*dx(v) + dy(u)*dy(v))
+		+ on(2, u = uk)
+		+ int1d(Th, 1)(Vfdu0*v);
+
+
+init1;
+init2;
+vk = w0;
+hk = u0;
+
+for (int i = 0; i < K ; i++)
+{
+	uold = u;
+	// On résouds l'étape 3:i) en premier
+	// u^{2k}, w^{2k} sont connu
+	pair1;
+	pair2;
+	vk = w;
+	hk = u;
+	//On résouds l'étape 3:ii) en second 
+	impair1;
+	impair2;
+	wk = w;
+	uk = u;
+	
+	real L2 = sqrt(int2d(Th)((u-uold)^2));
+	cout << L2 << "\n";
+}
+
+plot(Th,u);

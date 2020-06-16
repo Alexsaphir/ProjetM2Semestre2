@@ -1,5 +1,0 @@
-[requires]
-fftw/3.3.8
-
-[generators]
-cmake
